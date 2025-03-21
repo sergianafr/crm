@@ -36,13 +36,11 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Import Employee</h4>
-                            <form th:action="@{/employee/import}" enctype="multipart/form-data" method="post">
+                            <form th:action="@{/employee/import}" method="post" enctype="multipart/form-data">
                                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                <label class="m-t-20"><i class="ti-link"></i> Employee File</label>
-                                <div class="form-group">
-                                    <div class="dropzone" id="my-dropzone"></div>
-                                </div>
-                                <button type="submit" class="btn btn-primary m-t-20">Import</button>
+                                <label for="file">Employee File</label>
+                                <input type="file" name="file" id="file" required>
+                                <button type="submit">Import</button>
                             </form>
                         </div>
                     </div>

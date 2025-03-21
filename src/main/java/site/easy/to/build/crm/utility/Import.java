@@ -108,10 +108,10 @@ public class Import {
     // }
     public static List<Object> validateData(String[] data, String[] dataType, int[] notNull, int rowCount,List<String> errors)throws Exception{
         List<Object> transformed = new ArrayList<>();
-        int count = -1;
+        int count = 0;
         // int rowcount = 0;
         for (int i = 0; i < data.length; i++) {
-            if(notNull[count++] == i && (data[i].isEmpty() || data[i] == null)){
+            if(notNull.length>0 && (notNull[count] == i && (data[i].isEmpty() || data[i] == null))){
                 errors.add("Colonne "+i+1+" est nulle ou vide a la ligne "+rowCount);
             }else {
                 transformed.add(Formatter.transform(data[i], dataType[i], rowCount, i, errors));
