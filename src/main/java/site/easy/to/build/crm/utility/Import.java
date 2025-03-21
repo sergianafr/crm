@@ -25,7 +25,7 @@ public class Import {
             if (!records.isEmpty()) {
                 String[] header = records.get(0); // Récupérer l'en-tête
                 System.out.println("Header: " + String.join(", ", header));
-
+ 
                 // Lire les données ligne par ligne
                 for (int i = 1; i < records.size(); i++) {
                     String[] row = records.get(i);
