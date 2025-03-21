@@ -122,13 +122,13 @@ public class Import {
     }
     public static void insertToTemp(List<String[]> data, String[] dataTypes, int[] notNull,String tableName, String columns, Connect c)throws Exception{
         String insertSQL = getQueryInsert(tableName, columns, dataTypes.length);
-        List<String> errors = new ArrayList<>();
         try {
             try (PreparedStatement pstmt = c.getConnex().prepareStatement(insertSQL)) {
                 for (int i = 1; i < data.size(); i++) { // Commencer à 1 pour ignorer l'en-tête
+                    List<String> errors = new ArrayList<>();
                     String[] row = data.get(i);
                     List<Object> transformed = validateData(row, dataTypes, notNull, i, errors);
-                    if(errors.size() < 0){
+                    if(errors.size() <= 0){
                         for (int j = 0; j < transformed.size(); j++) {
                             pstmt.setObject(j+1, transformed.get(j));
                         }

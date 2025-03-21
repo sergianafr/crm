@@ -1,0 +1,1 @@
+- Dans GoogleCalendarApiServiceImpl, on a ajouté un filtre qui ne montre que les event dont le start et end sont null.
