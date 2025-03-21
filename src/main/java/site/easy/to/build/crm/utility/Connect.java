@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class Connect {
-    private static final String DATABASE = "coworking";
-    private static final String PASSWORD = "Etu002610";
+    private static final String DATABASE = "crm";
+    private static final String PASSWORD = "root";
     private Connection connex;
 
     public Connection getConnex() {
@@ -52,4 +52,18 @@ public class Connect {
             throw e;
         }
     }
+    public void connectToMySQL() throws Exception {
+        try {
+            // Class.forName("com.mysql.cj.jdbc.Driver");    
+            this.connex = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/" + DATABASE + "?useUnicode=true&characterEncoding=UTF-8", 
+                "root", 
+                PASSWORD
+            );
+                this.connex.setAutoCommit(false);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+    
 }
