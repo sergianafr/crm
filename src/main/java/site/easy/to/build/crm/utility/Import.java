@@ -106,43 +106,54 @@ public class Import {
     //         throw e;
     //     }
     // }
-    public static List<Object> validateData(String[] data, String[] dataType, int[] notNull, int rowCount,List<String> errors)throws Exception{
+    public static void transformData(List<String[]> data, String[] dataType){
+
+    }
+    public static List<Object> validateData(String[] data, String[] dataType, int[] notNull, int rowCount,List<String> errors){
         List<Object> transformed = new ArrayList<>();
         int count = 0;
         // int rowcount = 0;
         for (int i = 0; i < data.length; i++) {
-            if(notNull.length>0 && (notNull[count] == i && (data[i].isEmpty() || data[i] == null))){
+            if(notNull.length>0 && (notNull[count] == i && (data[i].isEmpty() || data[i] == null || data[i].toLowerCase().equals("null")))){
                 errors.add("Colonne "+i+1+" est nulle ou vide a la ligne "+rowCount);
-            }else {
+            }else if(data[i].isEmpty() || data[i] == null || data[i].toLowerCase().equals("null"))  {
+                transformed.add(null);
+            }
+            else {
                 transformed.add(Formatter.transform(data[i], dataType[i], rowCount, i, errors));
             }
 
         }
         return transformed;
     }
+
+    public static List<String> getErrors(List<String[]> data, String[] dataTypes, int[] notNull){
+        List<String> errors = new ArrayList<>();
+        for (int i = 1; i < data.size(); i++) {
+            String[] row = data.get(i);
+            List<Object> transformed = validateData(row, dataTypes, notNull, i, errors);
+        }
+        return errors;
+    }
     public static void insertToTemp(List<String[]> data, String[] dataTypes, int[] notNull,String tableName, String columns, Connect c)throws Exception{
         String insertSQL = getQueryInsert(tableName, columns, dataTypes.length);
-        try {
-            try (PreparedStatement pstmt = c.getConnex().prepareStatement(insertSQL)) {
-                for (int i = 1; i < data.size(); i++) { // Commencer à 1 pour ignorer l'en-tête
-                    List<String> errors = new ArrayList<>();
-                    String[] row = data.get(i);
-                    List<Object> transformed = validateData(row, dataTypes, notNull, i, errors);
-                    if(errors.size() <= 0){
+        List<String> errors = getErrors(data, dataTypes, notNull);
+        if(errors.size() <= 0){
+            try {
+                try (PreparedStatement pstmt = c.getConnex().prepareStatement(insertSQL)) {
+                    for (int i = 1; i < data.size(); i++) { // Commencer à 1 pour ignorer l'en-tête
+                        String[] row = data.get(i);
+                        List<Object> transformed = validateData(row, dataTypes, notNull, i, errors);
                         for (int j = 0; j < transformed.size(); j++) {
                             pstmt.setObject(j+1, transformed.get(j));
                         }
                         pstmt.addBatch();
-                    } else {
-                        for (String error : errors) {
-                            System.out.println(error);
-                        }
                     }
+                    pstmt.executeBatch();
                 }
-                pstmt.executeBatch();
+            } catch (Exception e) {
+                throw e;
             }
-        } catch (Exception e) {
-            throw e;
         }
     }
     private static String getQueryInsert(String tableName, String columns, int size){

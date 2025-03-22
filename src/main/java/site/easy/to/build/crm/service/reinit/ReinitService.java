@@ -19,8 +19,14 @@ public class ReinitService {
         
         // Récupérer toutes les tables et les vider dynamiquement
         List<String> tables = jdbcTemplate.queryForList("SHOW TABLES", String.class);
+        int i = 0;
         for (String table : tables) {
-            jdbcTemplate.execute("TRUNCATE TABLE " + table);
+            String tabString = table.toLowerCase();
+            if(!tabString.equals("oauth_users") && !tabString.equals("user_profile") && !tabString.equals("users") && !tabString.equals("roles") && !tabString.equals("user_roles")){
+                jdbcTemplate.execute("TRUNCATE TABLE " + table);
+                
+                System.out.println(table+" tab "+i++);
+            }
         }
         
         // Réactiver les contraintes de clé étrangère
