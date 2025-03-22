@@ -9,6 +9,7 @@ import jakarta.validation.groups.Default;
 import site.easy.to.build.crm.customValidations.customer.UniqueEmail;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "customer")
@@ -66,6 +67,9 @@ public class Customer {
     @JsonIgnoreProperties("customer")
     private User user;
 
+    @OneToMany(mappedBy = "customer")
+    private List<Budget> budgets;
+    
     @OneToOne
     @JoinColumn(name = "profile_id")
     @JsonIgnore
