@@ -124,6 +124,18 @@
                                     <input type="checkbox" class="custom-control-input trigger-emails" th:id="googleDrive" th:field="*{googleDrive}">
                                     <label th:for="googleDrive" class="custom-control-label">Upload Docs to your Google Drive</label>
                                 </div>
+
+                                <br>
+                                <h5 class="card-title">Expense</h5>
+                                <label class="m-t-20" for="descriptions">Description:</label>
+                                <div class="input-group">
+                                    <input type="text" id="descriptions" name="expDescriptions" class="form-control">
+                                </div>
+                                <label class="m-t-20" for="amount">Amount:</label>
+                                <div class="input-group">
+                                    <input type="text" id="amount" name="expAmount" class="form-control">
+                                </div>
+                                
                                 <button type="submit" class="btn btn-primary m-t-20">Create Lead</button>
                             </form>
                         </div>

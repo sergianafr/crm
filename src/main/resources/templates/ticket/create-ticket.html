@@ -135,6 +135,16 @@
                                         <option th:each="customer : ${customers}" th:text="${customer.name}" th:value="${customer.customerId}"></option>
                                     </select>
                                 </div>
+                                <br>
+                                <h5 class="card-title">Expense</h5>
+                                <label class="m-t-20" for="descriptions">Description:</label>
+                                <div class="input-group">
+                                    <input type="text" id="descriptions" name="expDescriptions" class="form-control">
+                                </div>
+                                <label class="m-t-20" for="amount">Amount:</label>
+                                <div class="input-group">
+                                    <input type="text" id="amount" name="expAmount" class="form-control">
+                                </div>
 
                                 <button type="submit" class="btn btn-primary m-t-20">Create ticket</button>
                             </form>
