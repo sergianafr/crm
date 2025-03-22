@@ -1,18 +1,35 @@
 package site.easy.to.build.crm.service.customer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import site.easy.to.build.crm.repository.CustomerRepository;
-import site.easy.to.build.crm.entity.Customer;
 
+import site.easy.to.build.crm.repository.BudgetRepository;
+import site.easy.to.build.crm.repository.CustomerRepository;
+import site.easy.to.build.crm.repository.ExpenseRepository;
+import site.easy.to.build.crm.repository.LeadRepository;
+import site.easy.to.build.crm.repository.TicketRepository;
+import site.easy.to.build.crm.service.lead.LeadService;
+import site.easy.to.build.crm.service.ticket.TicketService;
+import site.easy.to.build.crm.entity.Budget;
+import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.Lead;
+import site.easy.to.build.crm.entity.Ticket;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
-
+    @Autowired private BudgetRepository budgetRepository;
     private final CustomerRepository customerRepository;
-
+    @Autowired private LeadRepository leadRepository;
+    @Autowired private ExpenseRepository expenseRepository;
+    @Autowired private LeadService leadService;
+    @Autowired private TicketService ticketService;
+    
+    @Autowired private TicketRepository ticketRepository;
     public CustomerServiceImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
@@ -56,5 +73,59 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public long countByUserId(int userId) {
         return customerRepository.countByUserId(userId);
+    }
+
+    @Override
+    public BigDecimal getTotalBudget(int customerId) {
+        Customer c = customerRepository.findByCustomerId(customerId);
+        if (c == null) {
+            return BigDecimal.ZERO;
+        }
+        List<Budget> budgets = budgetRepository.findByCustomer(c);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Budget b : budgets) {
+            total = total.add(b.getAmount());
+        }
+        return total;
+        
+    }
+    @Override
+    public BigDecimal getTotalBudget(Customer c) {
+        if (c == null) {
+            return BigDecimal.ZERO;
+        }
+        List<Budget> budgets = budgetRepository.findByCustomer(c);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Budget b : budgets) {
+            total = total.add(b.getAmount());
+        }
+        return total;
+    }
+        
+    @Override
+    public BigDecimal getTotalExpense(int customerId){
+        List<Lead> leads = leadRepository.findByCustomerCustomerId(customerId);
+        List<Ticket> tickets = ticketRepository.findByCustomerCustomerId(customerId);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Lead l : leads) {
+            total = total.add(leadService.getTotalExpense(l));
+        }
+        for (Ticket t : tickets) {
+            total = total.add(ticketService.getTotalExpense(t));
+        }
+        return total;
+    }
+    @Override
+    public BigDecimal getTotalExpense(Customer c){
+        List<Lead> leads = leadRepository.findByCustomerCustomerId(c.getCustomerId());
+        List<Ticket> tickets = ticketRepository.findByCustomerCustomerId(c.getCustomerId());
+        BigDecimal total = BigDecimal.ZERO;
+        for (Lead l : leads) {
+            total = total.add(leadService.getTotalExpense(l));
+        }
+        for (Ticket t : tickets) {
+            total = total.add(ticketService.getTotalExpense(t));
+        }
+        return total;
     }
 }

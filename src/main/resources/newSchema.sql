@@ -34,3 +34,12 @@ CREATE TABLE history_expense(
    FOREIGN KEY(id_expense) REFERENCES expense(id),
    FOREIGN KEY(id_user) REFERENCES users(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE Rate(
+   id INT AUTO_INCREMENT,
+   rate DECIMAL(7,2)   DEFAULT 100,
+   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+   id_user INT,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_user) REFERENCES users(id)
+);

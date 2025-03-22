@@ -3,6 +3,7 @@ package site.easy.to.build.crm.service.customer;
 import org.checkerframework.checker.units.qual.C;
 import site.easy.to.build.crm.entity.Customer;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface CustomerService {
@@ -22,5 +23,10 @@ public interface CustomerService {
     public List<Customer> getRecentCustomers(int userId, int limit);
 
     long countByUserId(int userId);
+    public BigDecimal getTotalBudget(int customerId);
+    public BigDecimal getTotalBudget(Customer c);
+
+    public BigDecimal getTotalExpense(int customerId);
+    public BigDecimal getTotalExpense(Customer c);
 
 }

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.Expense;
 import site.easy.to.build.crm.entity.Lead;
 
 import java.util.List;

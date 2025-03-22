@@ -229,6 +229,14 @@ public class Customer {
         this.createdAt = createdAt;
     }
 
+    public List<Budget> getBudgets() {
+        return budgets;
+    }
+
+    public void setBudgets(List<Budget> budgets) {
+        this.budgets = budgets;
+    }
+
 //    public List<Ticket> getTickets() {
 //        return tickets;
 //    }

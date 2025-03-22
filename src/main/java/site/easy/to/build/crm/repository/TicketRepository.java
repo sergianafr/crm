@@ -31,4 +31,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     long countByCustomerCustomerId(int customerId);
 
     void deleteAllByCustomer(Customer customer);
+    
 }

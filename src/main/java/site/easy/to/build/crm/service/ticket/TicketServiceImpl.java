@@ -1,17 +1,22 @@
 package site.easy.to.build.crm.service.ticket;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.Expense;
+import site.easy.to.build.crm.entity.Lead;
+import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.repository.TicketRepository;
 import site.easy.to.build.crm.entity.Ticket;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class TicketServiceImpl implements TicketService{
-
+    @Autowired private ExpenseRepository expenseRepository;
     private final TicketRepository ticketRepository;
 
     public TicketServiceImpl(TicketRepository ticketRepository) {
@@ -89,5 +94,30 @@ public class TicketServiceImpl implements TicketService{
     @Override
     public void deleteAllByCustomer(Customer customer) {
         ticketRepository.deleteAllByCustomer(customer);
+    }
+    @Override
+    public BigDecimal getTotalExpense(int ticketId) {
+        Ticket l = ticketRepository.findByTicketId(ticketId);
+        if (l == null) {
+            return BigDecimal.ZERO;
+        }
+        List<Expense> expenses = expenseRepository.findByTicket(l);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Expense e : expenses) {
+            total = total.add(e.getAmount());
+        }
+        return total;
+    }
+    @Override
+    public BigDecimal getTotalExpense(Ticket l) {
+        if (l == null) {
+            return BigDecimal.ZERO;
+        }
+        List<Expense> expenses = expenseRepository.findByTicket(l);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Expense e : expenses) {
+            total = total.add(e.getAmount());
+        }
+        return total;
     }
 }
