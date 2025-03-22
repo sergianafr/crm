@@ -262,7 +262,7 @@ CREATE TABLE IF NOT EXISTS `trigger_lead` (
 --
 -- Table structure for table `trigger_ticket`
 --
-
+ 
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -495,6 +495,7 @@ CREATE TABLE IF NOT EXISTS `google_drive_file` (
   CONSTRAINT `google_drive_file_ibfk_2` FOREIGN KEY (`contract_id`) REFERENCES `trigger_contract` (`contract_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
