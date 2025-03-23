@@ -15,6 +15,7 @@ import site.easy.to.build.crm.entity.*;
 import site.easy.to.build.crm.entity.settings.TicketEmailSettings;
 import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
+import site.easy.to.build.crm.service.ExpenseService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.settings.TicketEmailSettingsService;
 import site.easy.to.build.crm.service.ticket.TicketService;
@@ -24,6 +25,7 @@ import site.easy.to.build.crm.util.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -33,7 +35,7 @@ import java.util.regex.Pattern;
 @Controller
 @RequestMapping("/employee/ticket")
 public class TicketController {
-
+    @Autowired private ExpenseService expenseService;
     private final TicketService ticketService;
     private final AuthenticationUtils authenticationUtils;
     private final UserService userService;
@@ -119,13 +121,14 @@ public class TicketController {
         model.addAttribute("employees",employees);
         model.addAttribute("customers",customers);
         model.addAttribute("ticket", new Ticket());
+        // model.addAttribute("", customers)
         return "ticket/create-ticket";
     }
 
     @PostMapping("/create-ticket")
     public String createTicket(@ModelAttribute("ticket") @Validated Ticket ticket, BindingResult bindingResult, @RequestParam("customerId") int customerId,
                                @RequestParam Map<String, String> formParams, Model model,
-                               @RequestParam("employeeId") int employeeId, Authentication authentication) {
+                               @RequestParam("employeeId") int employeeId,@RequestParam("expDescriptions") String expDescriptions, @RequestParam("expAmount")BigDecimal  expAmount,Authentication authentication) {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User manager = userService.findById(userId);
@@ -163,14 +166,19 @@ public class TicketController {
                 return "error/500";
             }
         }
-
+        // Relation avec le ticket
         ticket.setCustomer(customer);
         ticket.setManager(manager);
         ticket.setEmployee(employee);
         ticket.setCreatedAt(LocalDateTime.now());
-
         ticketService.save(ticket);
 
+        Expense expense = new Expense();
+        expense.setAmount(expAmount);
+        expense.setDescriptions(expDescriptions);
+        expense.setTicket(ticket);
+        expense.setUser(manager);
+        expenseService.save(expense);
         return "redirect:/employee/ticket/assigned-tickets";
     }
 

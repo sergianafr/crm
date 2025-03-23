@@ -1,17 +1,22 @@
 package site.easy.to.build.crm.service.lead;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.Expense;
+import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.repository.LeadRepository;
 import site.easy.to.build.crm.entity.Lead;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class LeadServiceImpl implements LeadService {
 
+    @Autowired private ExpenseRepository expenseRepository;
     private final LeadRepository leadRepository;
 
     public LeadServiceImpl(LeadRepository leadRepository) {
@@ -93,5 +98,30 @@ public class LeadServiceImpl implements LeadService {
     @Override
     public long countByCustomerId(int customerId) {
         return leadRepository.countByCustomerCustomerId(customerId);
+    }
+    @Override
+    public BigDecimal getTotalExpense(int leadId) {
+        Lead l = leadRepository.findByLeadId(leadId);
+        if (l == null) {
+            return BigDecimal.ZERO;
+        }
+        List<Expense> expenses = expenseRepository.findByLead(l);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Expense e : expenses) {
+            total = total.add(e.getAmount());
+        }
+        return total;
+    }
+    @Override
+    public BigDecimal getTotalExpense(Lead l) {
+        if (l == null) {
+            return BigDecimal.ZERO;
+        }
+        List<Expense> expenses = expenseRepository.findByLead(l);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Expense e : expenses) {
+            total = total.add(e.getAmount());
+        }
+        return total;
     }
 }

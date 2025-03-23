@@ -135,13 +135,115 @@
                                         <option th:each="customer : ${customers}" th:text="${customer.name}" th:value="${customer.customerId}"></option>
                                     </select>
                                 </div>
+                                <br>
+                                <h5 class="card-title">Expense</h5>
+                                <label class="m-t-20" for="descriptions">Description:</label>
+                                <div class="input-group">
+                                    <input type="text" id="descriptions" name="expDescriptions" class="form-control">
+                                </div>
+                                <label class="m-t-20" for="amount">Amount:</label>
+                                <div class="input-group">
+                                    <input type="text" id="amount" name="expAmount" class="form-control">
+                                </div>
+                                <div id="validMessage" class="alert alert-success mt-2" style="display: none;">
+                                    <i class="fas fa-check-circle"></i> Valid amount.
+                                </div>
 
+                                <!-- Message d'avertissement (carte jaune) -->
+                                <div id="warningMessage" class="alert alert-warning mt-2" style="display: none;">
+                                    <i class="fas fa-exclamation-triangle"></i> The total expense for this client has exceed the max rate.
+                                </div>
+
+                                <!-- Modal pour le budget dépassé -->
+                                <div class="modal fade" id="exceedModal" tabindex="-1" role="dialog"
+                                    aria-labelledby="exceedModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exceedModalLabel">Warning</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>The total expense for this customer has exceed the budget, 
+                                                    still want to proceed?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-primary"
+                                                    id="proceedButton">Proceed</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <button type="submit" class="btn btn-primary m-t-20">Create ticket</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    // Écouter l'événement 'change' sur le champ expAmount
+                    $('#amount').on('change', function () {
+                        // Récupérer les valeurs de customerId et expAmount
+                        const customerId = $('#customerId').val();
+                        const expAmount = $('#amount').val();
+
+                        // Vérifier que les deux valeurs sont présentes
+                        if (customerId && expAmount) {
+                            // Préparer les données à envoyer
+                            const requestData = {
+                                customerId: customerId,
+                                amount: expAmount
+                            };
+
+                            // Faire une requête AJAX vers l'endpoint /checkExpense
+                            $.ajax({
+                                url: '/api/customer/checkExpense',
+                                type: 'GET',
+                                data: requestData,
+                                success: function (response) {
+                                    // Cacher tous les messages
+                                    $('#validMessage').hide();
+                                    $('#warningMessage').hide();
+
+                                    // Afficher le message approprié
+                                    if (response === 'valid') {
+                                        $('#validMessage').show(); // Afficher la carte verte
+                                    } else if (response === 'superior') {
+                                        $('#warningMessage').show(); // Afficher la carte jaune
+                                    } else if (response === 'exceed') {
+                                        $('#exceedModal').modal('show'); // Afficher le modal
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error('Erreur lors de la requête :', error);
+                                    alert('Une erreur est survenue lors de la vérification de la dépense.');
+                                }
+                            });
+                        } else {
+                            alert('Veuillez sélectionner un client et saisir un montant.');
+                        }
+                    });
+
+                    // Gérer le clic sur le bouton "Procéder" dans le modal
+                    $('#proceedButton').on('click', function () {
+                        alert('Vous avez choisi de procéder avec le budget dépassé.');
+                        $('#exceedModal').modal('hide'); // Fermer le modal
+                    });
+                    // Gérer le clic sur le bouton "Annuler" dans le modal
+                    $('.modal-footer .btn-secondary').on('click', function() {
+                        $('#amount').val('0'); // Réinitialiser la valeur du champ amount à 0
+                        $('#exceedModal').modal('hide'); // Fermer le modal
+                    });
+
+                });
+            </script>
             <!-- ============================================================== -->
             <!-- End Page Content -->
             <!-- ============================================================== -->
@@ -178,21 +280,21 @@
 <script th:inline="javascript">
     var home = /*[[${home}]]*/ null;
 </script>
-<script th:src="@{/js/library/jquery-3.2.1.min.js}" type="text/javascript">></script>
+<script th:src="@{/js/library/jquery-3.2.1.min.js}" type="text/javascript"></script>
 <!--    &lt;!&ndash; Bootstrap tether Core JavaScript &ndash;&gt;-->
-<script th:src="@{/js/library/popper.min.js}" type="text/javascript">></script>
-<script th:src="@{/js/library/bootstrap.min.js}" type="text/javascript">></script>
+<script th:src="@{/js/library/popper.min.js}" type="text/javascript"></script>
+<script th:src="@{/js/library/bootstrap.min.js}" type="text/javascript"></script>
 <!--    &lt;!&ndash; slimscrollbar scrollbar JavaScript &ndash;&gt;-->
-<script th:src="@{/js/library/perfect-scrollbar.jquery.min.js}" type="text/javascript">></script>
+<script th:src="@{/js/library/perfect-scrollbar.jquery.min.js}" type="text/javascript"></script>
 <!--Wave Effects -->
-<script th:src="@{/js/library/waves.js}" type="text/javascript">></script>
+<script th:src="@{/js/library/waves.js}" type="text/javascript"></script>
 <!--Menu sidebar -->
-<script th:src="@{/js/library/sidebarmenu.js}" type="text/javascript">></script>
+<script th:src="@{/js/library/sidebarmenu.js}" type="text/javascript"></script>
 <!--stickey kit -->
 <script th:src="@{/js/library/sticky-kit.min.js}"></script>
-<script th:src="@{/js/library/jquery.sparkline.min.js}" type="text/javascript">></script>
+<script th:src="@{/js/library/jquery.sparkline.min.js}" type="text/javascript"></script>
 <!--Custom JavaScript -->
-<script th:src="@{/js/library/custom.min.js}" type="text/javascript">></script>
+<script th:src="@{/js/library/custom.min.js}" type="text/javascript"></script>
 <!-- Editable -->
 
 <script th:src="@{/js/library/wysihtml5-0.3.0.js}"></script>

@@ -25,6 +25,7 @@ import site.easy.to.build.crm.google.service.acess.GoogleAccessService;
 import site.easy.to.build.crm.google.service.calendar.GoogleCalendarApiService;
 import site.easy.to.build.crm.google.service.drive.GoogleDriveApiService;
 import site.easy.to.build.crm.google.service.gmail.GoogleGmailApiService;
+import site.easy.to.build.crm.service.ExpenseService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.drive.GoogleDriveFileService;
 import site.easy.to.build.crm.service.file.FileService;
@@ -37,6 +38,7 @@ import site.easy.to.build.crm.util.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -46,7 +48,7 @@ import java.util.regex.Pattern;
 @Controller
 @RequestMapping("/employee/lead")
 public class LeadController {
-
+    @Autowired ExpenseService expenseService;
     private final LeadService leadService;
     private final AuthenticationUtils authenticationUtils;
     private final UserService userService;
@@ -166,8 +168,7 @@ public class LeadController {
 
     @PostMapping("/create")
     public String createLead(@ModelAttribute("lead") @Validated Lead lead, BindingResult bindingResult,
-                             @RequestParam("customerId") int customerId, @RequestParam("employeeId") int employeeId,
-                             Authentication authentication, @RequestParam("allFiles")@Nullable String files,
+                             @RequestParam("customerId") int customerId, @RequestParam("employeeId") int employeeId, @RequestParam("expDescriptions") String expDescriptions, @RequestParam("expAmount")BigDecimal  expAmount,Authentication authentication, @RequestParam("allFiles")@Nullable String files,
                              @RequestParam("folderId") @Nullable String folderId, Model model) throws JsonProcessingException {
 
         int userId = authenticationUtils.getLoggedInUserId(authentication);
@@ -209,6 +210,12 @@ public class LeadController {
         }
 
         Lead createdLead = leadService.save(lead);
+        Expense expense = new Expense();
+        expense.setAmount(expAmount);
+        expense.setDescriptions(expDescriptions);
+        expense.setLead(createdLead);
+        expense.setUser(manager);
+        expenseService.save(expense);
         fileUtil.saveFiles(allFiles, createdLead);
 
         if (lead.getGoogleDrive() != null) {

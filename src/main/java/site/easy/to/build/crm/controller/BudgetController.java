@@ -18,6 +18,8 @@ import site.easy.to.build.crm.service.BudgetService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.user.UserService;
 import site.easy.to.build.crm.util.AuthenticationUtils;
+import site.easy.to.build.crm.util.AuthorizationUtil;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -36,6 +38,9 @@ public class BudgetController {
     private CustomerService customerService;
     @GetMapping("/create")
     public String showSaveForm(Model model, Authentication authentication) {
+        if(!AuthorizationUtil.hasRole(authentication, "ROLE_MANAGER") && !AuthorizationUtil.hasRole(authentication, "ROLE_EMPLOYEE")) {
+            return "error/access-denied";
+        }
         int userId = authenticationUtils.getLoggedInUserId(authentication);
         User user = userService.findById(userId);
         if(user.isInactiveUser()) {
@@ -47,6 +52,9 @@ public class BudgetController {
     }
     @PostMapping("/create")
     public String createBudget(@ModelAttribute("budget") Budget budget, BindingResult result, @RequestParam("customerId") Integer customerId,Authentication authentication,Model model) {
+        if(!AuthorizationUtil.hasRole(authentication, "ROLE_MANAGER") && !AuthorizationUtil.hasRole(authentication, "ROLE_EMPLOYEE")) {
+            return "error/access-denied";
+        }
         model.addAttribute("customers", customerService.findAll());
         if (result.hasErrors()) {
             System.out.println(result.getAllErrors());

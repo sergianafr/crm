@@ -42,6 +42,13 @@ public class HistoryExpense {
         this.dateUpdate = LocalDateTime.now(); // Définit la date de mise à jour automatiquement
     }
 
+    public HistoryExpense(Expense expense){
+        this.expense = expense;
+        this.descriptions = expense.getDescriptions();
+        this.amount = expense.getAmount();
+        this.user = expense.getUser();
+        this.dateUpdate = LocalDateTime.now(); // Définit la date de mise à jour automatiquement
+    }
     // Getters et Setters
 
     public Long getId() {
