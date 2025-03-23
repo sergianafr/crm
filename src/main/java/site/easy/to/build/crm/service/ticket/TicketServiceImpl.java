@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import site.easy.to.build.crm.dto.TicketDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Expense;
 import site.easy.to.build.crm.entity.Lead;
@@ -12,7 +14,13 @@ import site.easy.to.build.crm.repository.TicketRepository;
 import site.easy.to.build.crm.entity.Ticket;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketServiceImpl implements TicketService{
@@ -119,5 +127,51 @@ public class TicketServiceImpl implements TicketService{
             total = total.add(e.getAmount());
         }
         return total;
+    }
+    @Override
+    public List<TicketDto> getAllTickets() {
+        List<Ticket> tickets = ticketRepository.findAll();
+
+        return tickets.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private TicketDto convertToDTO(Ticket ticket) {
+        TicketDto dto = new TicketDto();
+        dto.setTicketId(ticket.getTicketId());
+        dto.setSubject(ticket.getSubject());
+        dto.setDescription(ticket.getDescription());
+        dto.setStatus(ticket.getStatus());
+        dto.setPriority(ticket.getPriority());
+        List<Expense> expenses = expenseRepository.findByTicket(ticket);
+        if (!expenses.isEmpty()) {
+            BigDecimal expenseAmount = expenses.get(0).getAmount();
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
+            symbols.setGroupingSeparator(','); 
+            symbols.setDecimalSeparator('.');
+            DecimalFormat formatter = new DecimalFormat("#,##0.00", symbols);  
+            dto.setExpense(formatter.format(expenseAmount)); 
+        } else {
+            dto.setExpense("0.0"); 
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        dto.setCreatedAt(ticket.getCreatedAt().format(formatter));
+
+        if (ticket.getEmployee() != null) {
+            dto.setEmployeeName(ticket.getEmployee().getUsername());
+        }
+
+        // Get customer name
+        if (ticket.getCustomer() != null) {
+            dto.setCustomerName(ticket.getCustomer().getName());
+        }
+
+        // Get manager name
+        if (ticket.getManager() != null) {
+            dto.setManagerName(ticket.getManager().getUsername());
+        }
+
+        return dto;
     }
 }

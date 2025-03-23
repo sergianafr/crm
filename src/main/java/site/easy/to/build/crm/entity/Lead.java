@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "trigger_lead")
 public class Lead {
@@ -58,7 +60,9 @@ public class Lead {
     private Customer customer;
 
     @Column(name = "created_at")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
+    
 
     public Lead() {
     }

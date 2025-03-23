@@ -1,5 +1,6 @@
 package site.easy.to.build.crm.service.lead;
 
+import site.easy.to.build.crm.dto.LeadDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
 
@@ -7,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface LeadService {
+    public List<LeadDto> getAllLeads();
     public Lead findByLeadId(int id);
 
     public List<Lead> findAll();
