@@ -12,13 +12,18 @@ import site.easy.to.build.crm.repository.LeadRepository;
 import site.easy.to.build.crm.repository.TicketRepository;
 import site.easy.to.build.crm.service.lead.LeadService;
 import site.easy.to.build.crm.service.ticket.TicketService;
+import site.easy.to.build.crm.dto.CustomerDto;
 import site.easy.to.build.crm.entity.Budget;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -127,5 +132,26 @@ public class CustomerServiceImpl implements CustomerService {
             total = total.add(ticketService.getTotalExpense(t));
         }
         return total;
+    }
+    @Override
+    public List<CustomerDto> getAllCustomers() {
+        // Récupérer tous les clients depuis la base de données
+        List<Customer> customers = customerRepository.findAll();
+
+        // Convertir chaque Customer en CustomerDto
+        return customers.stream()
+                .map(customer -> {
+                    CustomerDto customerDto = CustomerDto.fromEntity(customer);
+                    BigDecimal budget = getTotalBudget(customer);
+                    BigDecimal expense = getTotalExpense(customer);
+                    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
+                    symbols.setGroupingSeparator(','); 
+                    symbols.setDecimalSeparator('.');
+                    DecimalFormat formatter = new DecimalFormat("#,##0.00", symbols);                      // Récupérer le montant de la première expense
+                    customerDto.setBudget(formatter.format(budget));
+                    customerDto.setExpense(formatter.format(expense));
+                    return customerDto;
+                })
+                .collect(Collectors.toList());
     }
 }

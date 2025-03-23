@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import site.easy.to.build.crm.dto.LeadDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Expense;
 import site.easy.to.build.crm.repository.ExpenseRepository;
@@ -11,7 +13,12 @@ import site.easy.to.build.crm.repository.LeadRepository;
 import site.easy.to.build.crm.entity.Lead;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class LeadServiceImpl implements LeadService {
@@ -88,6 +95,33 @@ public class LeadServiceImpl implements LeadService {
     @Override
     public long countByEmployeeId(int employeeId) {
         return leadRepository.countByEmployeeId(employeeId);
+    }
+    @Override
+    public List<LeadDto> getAllLeads() {
+        // Récupérer tous les leads depuis la base de données
+        List<Lead> leads = leadRepository.findAll();
+    
+        // Convertir chaque Lead en LeadDto et ajouter l'expense
+        return leads.stream()
+                .map(lead -> {
+                    LeadDto leadDto = LeadDto.fromEntity(lead); // Convertir Lead en LeadDto
+    
+                    // Récupérer l'expense associée au lead
+                    List<Expense> expenses = expenseRepository.findByLead(lead);
+                    if (!expenses.isEmpty()) {
+                        BigDecimal expenseAmount = expenses.get(0).getAmount();
+                        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
+                        symbols.setGroupingSeparator(','); 
+                        symbols.setDecimalSeparator('.');
+                        DecimalFormat formatter = new DecimalFormat("#,##0.00", symbols);                      // Récupérer le montant de la première expense
+                        leadDto.setExpense(formatter.format(expenseAmount)); // Ajouter l'expense au LeadDto
+                    } else {
+                        leadDto.setExpense("0.0"); // Si aucune expense n'est trouvée, définir l'expense à 0
+                    }
+    
+                    return leadDto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

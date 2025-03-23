@@ -1,5 +1,6 @@
 package site.easy.to.build.crm.service.ticket;
 
+import site.easy.to.build.crm.dto.TicketDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface TicketService {
     public Ticket findByTicketId(int id);
-
+    public List<TicketDto> getAllTickets();
     public Ticket save(Ticket ticket);
 
     public void delete(Ticket ticket);

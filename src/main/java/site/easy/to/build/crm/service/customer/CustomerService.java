@@ -1,6 +1,8 @@
 package site.easy.to.build.crm.service.customer;
 
 import org.checkerframework.checker.units.qual.C;
+
+import site.easy.to.build.crm.dto.CustomerDto;
 import site.easy.to.build.crm.entity.Customer;
 
 import java.math.BigDecimal;
@@ -9,7 +11,7 @@ import java.util.List;
 public interface CustomerService {
 
     public Customer findByCustomerId(int customerId);
-
+    public List<CustomerDto> getAllCustomers();
     public List<Customer> findByUserId(int userId);
 
     public Customer findByEmail(String email);

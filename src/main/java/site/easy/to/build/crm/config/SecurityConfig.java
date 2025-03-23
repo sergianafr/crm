@@ -61,13 +61,15 @@ public class SecurityConfig {
         http.csrf((csrf) -> csrf
                 .csrfTokenRepository(httpSessionCsrfTokenRepository)
         );
-        http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/rate/save"));
+        http.csrf(csrf -> csrf
+        .ignoringRequestMatchers("/api/rate/save", "/api/dashboards/**"));
 
         // Activer CORS dans Spring Security
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         http.authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/rate/save").permitAll()
+                        .requestMatchers("/api/dashboards/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/set-employee-password/**").permitAll()
                         .requestMatchers("/change-password/**").permitAll()
