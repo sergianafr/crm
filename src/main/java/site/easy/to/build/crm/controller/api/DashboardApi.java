@@ -96,7 +96,9 @@ public class DashboardApi {
             int nbLeads = leads.size();
             String totalBudgetFormat = FrontFormatter.formatCurrency(totalB);
             List<CustomerTBDto> customerBudget = budgetService.getTotalBudget();
-            // Créer la réponse en tant que HashMap
+            BigDecimal totalExpense = customerService.getTotalExpense();
+            String totalExpenseFormat = FrontFormatter.formatCurrency(totalExpense);
+            List<CustomerTBDto> customerExpense = customerService.getExpenseCustomers(); 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("nbCustomers", nbCustomers);
@@ -105,6 +107,10 @@ public class DashboardApi {
             response.put("totalBudget", totalB);
             response.put("totalBudgetFormat", totalBudgetFormat);
             response.put("customerBudget", customerBudget);
+            response.put("totalExpense", totalExpense);
+            response.put("totalExpenseFormat", totalExpenseFormat);
+            response.put("customerExpense", customerExpense);
+            
             // Convertir la Map en JSON string et retourner directement la chaîne
             return objectMapper.writeValueAsString(response);
 

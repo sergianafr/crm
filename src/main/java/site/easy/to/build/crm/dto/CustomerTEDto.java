@@ -7,15 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import site.easy.to.build.crm.entity.Customer;
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CustomerTBDto {
-     private Integer customerId;
+@AllArgsConstructor
+public class CustomerTEDto {
+
+    private Integer customerId;
     private String customerName;
     private String customerCountry;
     private BigDecimal totalAmount;
-    
-    public static CustomerTBDto fromEntity(Customer c){
-        return new CustomerTBDto(c.getCustomerId(), c.getName(), c.getCountry(), BigDecimal.ZERO);
+
+    public static CustomerTEDto fromEntity(Customer c){
+        return new CustomerTEDto(c.getCustomerId(), c.getName(), c.getCountry(), BigDecimal.ZERO);
     }
 }
