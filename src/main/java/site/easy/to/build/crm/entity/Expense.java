@@ -2,6 +2,7 @@ package site.easy.to.build.crm.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "expense")
@@ -29,6 +30,8 @@ public class Expense {
     @JoinColumn(name = "id_lead")
     private Lead lead;
 
+    @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HistoryExpense> historyExpenses;
     // Constructeurs, getters et setters
 
     public Expense() {

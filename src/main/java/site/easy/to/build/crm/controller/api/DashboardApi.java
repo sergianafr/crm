@@ -36,6 +36,7 @@ import site.easy.to.build.crm.utility.FrontFormatter;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -184,6 +185,30 @@ public class DashboardApi {
         }
         
     }
+    @PostMapping("/leads/delete/{id}")
+    public String deleteLead(@PathVariable("id") int id) {
+        try{
+            Lead lead = leadService.findByLeadId(id);
+            leadService.delete(lead);
+            return "{\"success\": true}";
+        }catch(Exception e){
+            e.printStackTrace();
+            return "{\"success\": false}";
+        }
+    }
+
+    @PostMapping("/tickets/delete/{id}")
+    public String deleteTicket(@PathVariable("id") int id) {
+        try{
+            Ticket lead = ticketService.findByTicketId(id);
+            ticketService.delete(lead);
+            return "{\"success\": true}";
+        }catch(Exception e){
+            e.printStackTrace();
+            return "{\"success\": false}";
+        }
+    }
+    
     @PostMapping("/tickets/update-expense")
     public String updateExpenseTicket(@RequestBody ExpenseRequest entity) {
         System.out.println(entity.getAmount());

@@ -3,6 +3,7 @@ package site.easy.to.build.crm.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "trigger_lead")
+@AllArgsConstructor
+
 public class Lead {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,6 +66,8 @@ public class Lead {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     
+    @OneToMany(mappedBy = "lead", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Expense> expenses;
 
     public Lead() {
     }
@@ -88,7 +93,12 @@ public class Lead {
     public int getLeadId() {
         return leadId;
     }
-
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
+    }
     public void setLeadId(int leadId) {
         this.leadId = leadId;
     }
