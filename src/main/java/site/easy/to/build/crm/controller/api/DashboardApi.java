@@ -8,6 +8,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,17 +18,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import site.easy.to.build.crm.config.JacksonConfig;
 import site.easy.to.build.crm.dto.CustomerDto;
 import site.easy.to.build.crm.dto.DashboardData;
+import site.easy.to.build.crm.dto.ExpenseRequest;
 import site.easy.to.build.crm.dto.LeadDto;
 import site.easy.to.build.crm.dto.TicketDto;
 import site.easy.to.build.crm.entity.*;
 import site.easy.to.build.crm.service.DashboardService;
+import site.easy.to.build.crm.service.ExpenseService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.lead.LeadService;
 import site.easy.to.build.crm.service.ticket.TicketService;
+import site.easy.to.build.crm.service.user.UserService;
+import site.easy.to.build.crm.util.AuthenticationUtils;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -35,6 +44,9 @@ public class DashboardApi {
     @Autowired LeadService leadService;
     @Autowired TicketService ticketService;
     @Autowired CustomerService customerService;
+    @Autowired UserService userService;
+    @Autowired AuthenticationUtils authenticationUtils;
+    @Autowired ExpenseService expenseService;
     private final static ObjectMapper mapper = JacksonConfig.objectMapper();
 
     @GetMapping("/o")
@@ -143,5 +155,37 @@ public class DashboardApi {
                                  .body(null);
         }
     }
+
+    @PostMapping("/leads/update-expense")
+    public String updateExpenseLead(@RequestBody ExpenseRequest entity) {
+        System.out.println(entity.getAmount());
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            System.out.println(connected.getId());
+            expenseService.updateLead(entity, connected);
+            return "{\"success\": true}";
+        }catch(Exception e){
+            e.printStackTrace();
+            return "{\"success\": false}";
+        }
+        
+    }
+    @PostMapping("/tickets/update-expense")
+    public String updateExpenseTicket(@RequestBody ExpenseRequest entity) {
+        System.out.println(entity.getAmount());
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            System.out.println(connected.getId());
+            expenseService.updateTicket(entity, connected);
+            return "{\"success\": true}";
+        }catch(Exception e){
+            e.printStackTrace();
+            return "{\"success\": false}";
+        }
+        
+    }
+    
     
 }

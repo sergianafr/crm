@@ -1,20 +1,61 @@
 package site.easy.to.build.crm.service;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import site.easy.to.build.crm.dto.ExpenseRequest;
 import site.easy.to.build.crm.entity.Expense;
+import site.easy.to.build.crm.entity.Lead;
+import site.easy.to.build.crm.entity.Ticket;
+import site.easy.to.build.crm.entity.User;
 import site.easy.to.build.crm.repository.ExpenseRepository;
+import site.easy.to.build.crm.service.lead.LeadService;
+import site.easy.to.build.crm.service.ticket.TicketService;
 
 @Service
 public class ExpenseService {
    @Autowired private ExpenseRepository expenseRepository;
    @Autowired private HistoryExpenseService historyExpenseService;
-   
+   @Autowired private LeadService leadService;  
+   @Autowired private TicketService ticketService;
    public Expense save(Expense expense) {
         expenseRepository.save(expense);
         historyExpenseService.saveHistoryExpense(expense);
         return expense;
+   }
+
+   public Expense updateLead(ExpenseRequest request, User connected){
+      int leadId = request.getId();
+      BigDecimal amount = request.getAmount();
+      Lead l = leadService.findByLeadId(leadId);
+      List<Expense> exp = expenseRepository.findByLead(l);
+      Expense expe = new Expense();
+      expe.setUser(connected);
+      if(exp.isEmpty() || exp == null || exp.size()>1){
+         expe = new Expense(l.getName(), amount, connected, null, l);
+      }else {
+         expe = exp.get(0);
+         expe.setAmount(amount);
+      }
+      return save(expe);
+   }
+   public Expense updateTicket(ExpenseRequest request, User connected){
+      int ticketId = request.getId();
+      BigDecimal amount = request.getAmount();
+      Ticket l = ticketService.findByTicketId(ticketId);
+      List<Expense> exp = expenseRepository.findByTicket(l);
+      Expense expe = new Expense();
+      expe.setUser(connected);
+      if(exp.isEmpty() || exp == null || exp.size()>1){
+         expe = new Expense(l.getDescription(), amount, connected, l, null);
+      }else {
+         expe = exp.get(0);
+         expe.setAmount(amount);
+      }
+      return save(expe);
    }
 
    
