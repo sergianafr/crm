@@ -13,4 +13,7 @@ public class RateService {
     public Rate findMax() {
         return rateRepository.findMax().orElse(null);
     }
+    public Rate save(Rate rate) {
+        return rateRepository.save(rate);
+    }
 }

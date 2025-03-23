@@ -14,13 +14,18 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+
 import site.easy.to.build.crm.config.oauth2.CustomOAuth2UserService;
 import site.easy.to.build.crm.config.oauth2.OAuthLoginSuccessHandler;
 import site.easy.to.build.crm.service.user.OAuthUserService;
 import site.easy.to.build.crm.util.StringUtils;
 
 import java.util.Optional;
-
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -56,10 +61,13 @@ public class SecurityConfig {
         http.csrf((csrf) -> csrf
                 .csrfTokenRepository(httpSessionCsrfTokenRepository)
         );
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/rate/save"));
 
-        http.
-                authorizeHttpRequests((authorize) -> authorize
+        // Activer CORS dans Spring Security
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
+        http.authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/api/rate/save").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/set-employee-password/**").permitAll()
                         .requestMatchers("/change-password/**").permitAll()
@@ -74,7 +82,6 @@ public class SecurityConfig {
                         .requestMatchers("/customer/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
-
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
@@ -95,10 +102,23 @@ public class SecurityConfig {
                     exception.accessDeniedHandler(accessDeniedHandler());
                 });
 
-
         return http.build();
     }
 
+    // Configuration CORS pour Spring Security
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:5174")); // Origines autorisées
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Méthodes autorisées
+        configuration.setAllowedHeaders(List.of("*")); // En-têtes autorisés
+        configuration.setAllowCredentials(true); // Autoriser les cookies
+        configuration.setMaxAge(3600L); // Durée de vie du cache CORS
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Appliquer à tous les endpoints
+        return source;
+    }
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return new CustomAccessDeniedHandler();

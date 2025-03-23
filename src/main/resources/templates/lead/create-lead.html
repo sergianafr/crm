@@ -147,7 +147,7 @@
                                     </div>
                                     <!-- Message de validation (carte verte) -->
                                     <div id="validMessage" class="alert alert-success mt-2" style="display: none;">
-                                        <i class="fas fa-check-circle"></i> Le montant est valide.
+                                        <i class="fas fa-check-circle"></i> Valid amount.
                                     </div>
 
                                     <!-- Message d'avertissement (carte jaune) -->
@@ -265,6 +265,10 @@
                         // Gérer le clic sur le bouton "Procéder" dans le modal
                         $('#proceedButton').on('click', function () {
                             alert('Vous avez choisi de procéder avec le budget dépassé.');
+                            $('#exceedModal').modal('hide'); // Fermer le modal
+                        });
+                        $('.modal-footer .btn-secondary').on('click', function() {
+                            $('#amount').val('0'); // Réinitialiser la valeur du champ amount à 0
                             $('#exceedModal').modal('hide'); // Fermer le modal
                         });
 
