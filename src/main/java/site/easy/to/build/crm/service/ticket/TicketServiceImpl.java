@@ -11,6 +11,7 @@ import site.easy.to.build.crm.entity.Expense;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.repository.TicketRepository;
+import site.easy.to.build.crm.utility.FrontFormatter;
 import site.easy.to.build.crm.entity.Ticket;
 
 import java.math.BigDecimal;
@@ -147,16 +148,12 @@ public class TicketServiceImpl implements TicketService{
         List<Expense> expenses = expenseRepository.findByTicket(ticket);
         if (!expenses.isEmpty()) {
             BigDecimal expenseAmount = expenses.get(0).getAmount();
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
-            symbols.setGroupingSeparator(','); 
-            symbols.setDecimalSeparator('.');
-            DecimalFormat formatter = new DecimalFormat("#,##0.00", symbols);  
-            dto.setExpense(formatter.format(expenseAmount)); 
+            
+            dto.setExpense(FrontFormatter.formatCurrency(expenseAmount)); 
         } else {
             dto.setExpense("0.0"); 
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        dto.setCreatedAt(ticket.getCreatedAt().format(formatter));
+        dto.setCreatedAt(FrontFormatter.formatLocalDateTime( ticket.getCreatedAt()));
 
         if (ticket.getEmployee() != null) {
             dto.setEmployeeName(ticket.getEmployee().getUsername());

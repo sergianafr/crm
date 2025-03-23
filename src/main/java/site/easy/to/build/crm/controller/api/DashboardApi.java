@@ -1,5 +1,6 @@
 package site.easy.to.build.crm.controller.api;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +18,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import site.easy.to.build.crm.config.JacksonConfig;
 import site.easy.to.build.crm.dto.CustomerDto;
+import site.easy.to.build.crm.dto.CustomerTBDto;
 import site.easy.to.build.crm.dto.DashboardData;
 import site.easy.to.build.crm.dto.ExpenseRequest;
 import site.easy.to.build.crm.dto.LeadDto;
 import site.easy.to.build.crm.dto.TicketDto;
 import site.easy.to.build.crm.entity.*;
+import site.easy.to.build.crm.service.BudgetService;
 import site.easy.to.build.crm.service.DashboardService;
 import site.easy.to.build.crm.service.ExpenseService;
 import site.easy.to.build.crm.service.customer.CustomerService;
@@ -29,6 +32,7 @@ import site.easy.to.build.crm.service.lead.LeadService;
 import site.easy.to.build.crm.service.ticket.TicketService;
 import site.easy.to.build.crm.service.user.UserService;
 import site.easy.to.build.crm.util.AuthenticationUtils;
+import site.easy.to.build.crm.utility.FrontFormatter;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api/dashboards")
 public class DashboardApi {
+    @Autowired BudgetService budgetService;
     @Autowired LeadService leadService;
     @Autowired TicketService ticketService;
     @Autowired CustomerService customerService;
@@ -85,19 +90,21 @@ public class DashboardApi {
             List<Customer> customers = customerService.findAll();
             List<Ticket> tickets = ticketService.findAll();
             List<Lead> leads = leadService.findAll();
-
+            BigDecimal totalB = budgetService.getTotalAmount();
             int nbCustomers = customers.size();
             int nbTickets = tickets.size();
             int nbLeads = leads.size();
-
+            String totalBudgetFormat = FrontFormatter.formatCurrency(totalB);
+            List<CustomerTBDto> customerBudget = budgetService.getTotalBudget();
             // Créer la réponse en tant que HashMap
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("nbCustomers", nbCustomers);
             response.put("nbTickets", nbTickets);
             response.put("nbLeads", nbLeads);
-            response.put("dati", LocalDateTime.now());
-
+            response.put("totalBudget", totalB);
+            response.put("totalBudgetFormat", totalBudgetFormat);
+            response.put("customerBudget", customerBudget);
             // Convertir la Map en JSON string et retourner directement la chaîne
             return objectMapper.writeValueAsString(response);
 
@@ -183,8 +190,36 @@ public class DashboardApi {
         }catch(Exception e){
             e.printStackTrace();
             return "{\"success\": false}";
+        } 
+    }
+    @PostMapping("/leads/delete-expense")
+    public String deleteExpenseLead(@RequestBody ExpenseRequest entity) {
+        System.out.println(entity.getAmount());
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            System.out.println(connected.getId());
+            expenseService.updateLead(entity, connected);
+            return "{\"success\": true}";
+        }catch(Exception e){
+            e.printStackTrace();
+            return "{\"success\": false}";
         }
         
+    }
+    @PostMapping("/tickets/delete-expense")
+    public String deleteTicketLead(@RequestBody ExpenseRequest entity) {
+        System.out.println(entity.getAmount());
+        try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            System.out.println(connected.getId());
+            expenseService.updateTicket(entity, connected);
+            return "{\"success\": true}";
+        }catch(Exception e){
+            e.printStackTrace();
+            return "{\"success\": false}";
+        } 
     }
     
     

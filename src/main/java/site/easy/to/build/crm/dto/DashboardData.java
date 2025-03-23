@@ -1,5 +1,6 @@
 package site.easy.to.build.crm.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,26 +11,24 @@ public class DashboardData {
     private int nbCustomers;
     private int nbTickets;
     private int nbLeads;
-    private LocalDateTime datei ;
-    private String[] string = {"b", "b"};
+    private BigDecimal totalBudget;
+
     // Constructeurs, getters et setters
     public DashboardData( int nbCustomers, int nbTickets, int nbLeads) {
 
         this.nbCustomers = nbCustomers;
         this.nbTickets = nbTickets;
-        this.nbLeads = nbLeads;
-        this.string = new String[2];
-        string[0]="&";
-        string[1]="j";
-        datei = LocalDateTime.now();
+        this.nbLeads = nbLeads; 
+
     }
 
-    public LocalDateTime getDatei() {
-        return datei;
+    public BigDecimal getTotalBudget() {
+        return totalBudget;
     }
-    public void setDatei(LocalDateTime datei) {
-        this.datei = datei;
+    public void setTotalBudget(BigDecimal totalBudget) {
+        this.totalBudget = totalBudget;
     }
+
     public int getNbCustomers() {
         return nbCustomers;
     }
@@ -57,11 +56,6 @@ public class DashboardData {
 
     public void setNbLeads(int nbLeads) {
         this.nbLeads = nbLeads;
-    }
-    public String[] getString() {
-        return string;
-    }public void setString(String[] string) {
-        this.string = string;
     }
 
 

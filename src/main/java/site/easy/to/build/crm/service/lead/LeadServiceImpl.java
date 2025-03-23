@@ -10,6 +10,7 @@ import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Expense;
 import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.repository.LeadRepository;
+import site.easy.to.build.crm.utility.FrontFormatter;
 import site.easy.to.build.crm.entity.Lead;
 
 import java.math.BigDecimal;
@@ -110,13 +111,9 @@ public class LeadServiceImpl implements LeadService {
                     List<Expense> expenses = expenseRepository.findByLead(lead);
                     if (!expenses.isEmpty()) {
                         BigDecimal expenseAmount = expenses.get(0).getAmount();
-                        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
-                        symbols.setGroupingSeparator(','); 
-                        symbols.setDecimalSeparator('.');
-                        DecimalFormat formatter = new DecimalFormat("#,##0.00", symbols);                      // Récupérer le montant de la première expense
-                        leadDto.setExpense(formatter.format(expenseAmount)); // Ajouter l'expense au LeadDto
+                        leadDto.setExpense(FrontFormatter.formatCurrency(expenseAmount)); 
                     } else {
-                        leadDto.setExpense("0.0"); // Si aucune expense n'est trouvée, définir l'expense à 0
+                        leadDto.setExpense("0.0"); 
                     }
     
                     return leadDto;
