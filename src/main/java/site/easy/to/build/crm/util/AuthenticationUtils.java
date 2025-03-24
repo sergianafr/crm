@@ -63,6 +63,7 @@ public class AuthenticationUtils {
                 return customerLoginInfo.getId();
             }
         } else {
+            System.out.println(getOAuthUserFromAuthentication(authentication));
             OAuthUser oAuthUser = getOAuthUserFromAuthentication(authentication);
             if (oAuthUser == null) {
                 return -1;

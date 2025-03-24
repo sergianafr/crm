@@ -3,13 +3,16 @@ package site.easy.to.build.crm.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+
 import org.hibernate.mapping.ToOne;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
+@AllArgsConstructor
 @Entity
 @Table(name = "trigger_ticket")
 public class Ticket {
@@ -52,9 +55,16 @@ public class Ticket {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Expense> expenses;
     public Ticket() {
     }
-
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
+    }
     public Ticket(String subject, String description, String status, String priority, User manager, User employee, Customer customer, LocalDateTime createdAt) {
         this.subject = subject;
         this.description = description;

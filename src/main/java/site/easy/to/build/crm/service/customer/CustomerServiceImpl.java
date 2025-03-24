@@ -13,6 +13,8 @@ import site.easy.to.build.crm.repository.TicketRepository;
 import site.easy.to.build.crm.service.lead.LeadService;
 import site.easy.to.build.crm.service.ticket.TicketService;
 import site.easy.to.build.crm.dto.CustomerDto;
+import site.easy.to.build.crm.dto.CustomerTBDto;
+import site.easy.to.build.crm.dto.CustomerTEDto;
 import site.easy.to.build.crm.entity.Budget;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
@@ -21,6 +23,7 @@ import site.easy.to.build.crm.entity.Ticket;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -153,5 +156,28 @@ public class CustomerServiceImpl implements CustomerService {
                     return customerDto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CustomerTBDto> getExpenseCustomers(){
+        List<Customer> customers = customerRepository.findAll();
+        List<CustomerTBDto> ce = new ArrayList<>();
+        for (Customer c : customers) {
+            CustomerTBDto cet = CustomerTBDto.fromEntity(c);
+            cet.setTotalAmount(getTotalExpense(c));
+            System.out.println("exp" + getTotalExpense(c));
+            ce.add(cet);
+        }
+        return ce;
+    }
+    @Override
+    public BigDecimal getTotalExpense(){
+        List<Customer> customers = customerRepository.findAll();
+        BigDecimal ce = BigDecimal.ZERO;
+        for (Customer s : customers) {
+            ce = ce.add(getTotalExpense(s));
+            System.out.println(ce +"expp");
+        }
+        return ce;
     }
 }
