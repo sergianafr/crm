@@ -194,7 +194,6 @@
                         const customerId = $('#customerId').val();
                         const expAmount = $('#amount').val();
 
-                        // Vérifier que les deux valeurs sont présentes
                         if (customerId && expAmount) {
                             // Préparer les données à envoyer
                             const requestData = {
@@ -202,7 +201,6 @@
                                 amount: expAmount
                             };
 
-                            // Faire une requête AJAX vers l'endpoint /checkExpense
                             $.ajax({
                                 url: '/api/customer/checkExpense',
                                 type: 'GET',
@@ -214,7 +212,7 @@
 
                                     // Afficher le message approprié
                                     if (response === 'valid') {
-                                        $('#validMessage').show(); // Afficher la carte verte
+                                        $('#validMessage').show(); 
                                     } else if (response === 'superior') {
                                         $('#warningMessage').show(); // Afficher la carte jaune
                                     } else if (response === 'exceed') {

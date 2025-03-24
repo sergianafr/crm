@@ -17,4 +17,7 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
            "FROM Budget b JOIN b.customer c " +
            "GROUP BY c.id, c.name, c.country")
     List<CustomerTBDto> findTotalBudgetCustomer();
+    
+    @Query("SELECT DATE(b.createdAt) as date, SUM(b.amount) FROM Budget b GROUP BY DATE(b.createdAt)")
+    List<Object[]> sumBudgetsByDate();
 }

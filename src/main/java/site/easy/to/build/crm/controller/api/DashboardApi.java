@@ -20,12 +20,14 @@ import site.easy.to.build.crm.config.JacksonConfig;
 import site.easy.to.build.crm.dto.CustomerDto;
 import site.easy.to.build.crm.dto.CustomerTBDto;
 import site.easy.to.build.crm.dto.DashboardData;
+import site.easy.to.build.crm.dto.Evolution;
 import site.easy.to.build.crm.dto.ExpenseRequest;
 import site.easy.to.build.crm.dto.LeadDto;
 import site.easy.to.build.crm.dto.TicketDto;
 import site.easy.to.build.crm.entity.*;
 import site.easy.to.build.crm.service.BudgetService;
 import site.easy.to.build.crm.service.DashboardService;
+import site.easy.to.build.crm.service.EvolutionService;
 import site.easy.to.build.crm.service.ExpenseService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.lead.LeadService;
@@ -53,6 +55,7 @@ public class DashboardApi {
     @Autowired UserService userService;
     @Autowired AuthenticationUtils authenticationUtils;
     @Autowired ExpenseService expenseService;
+    @Autowired EvolutionService evolutionService;
     private final static ObjectMapper mapper = JacksonConfig.objectMapper();
 
     @GetMapping("/o")
@@ -67,17 +70,14 @@ public class DashboardApi {
             int nbTickets = tickets.size();
             int nbLeads = leads.size();
 
-            // Créer l'objet DashboardData
             DashboardData dashboardData = new DashboardData( nbCustomers, nbTickets, nbLeads);
 
-            // Retourner la réponse avec un statut HTTP 200 (OK)
             return ResponseEntity.ok(dashboardData);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Erreur lors de la récupération des données du tableau de bord");
-            // Retourner une réponse d'erreur avec un statut HTTP 500 (Internal Server Error)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body(null); // ou un objet d'erreur personnalisé
+                                 .body(null); 
         }
     }
 
@@ -100,6 +100,11 @@ public class DashboardApi {
             BigDecimal totalExpense = customerService.getTotalExpense();
             String totalExpenseFormat = FrontFormatter.formatCurrency(totalExpense);
             List<CustomerTBDto> customerExpense = customerService.getExpenseCustomers(); 
+            BigDecimal expenseTicket = expenseService.getTotalTicket();
+            String expenseTicketFormat = FrontFormatter.formatCurrency(expenseTicket);
+            BigDecimal expenseLead = expenseService.getTotalLead();
+            String expenseLeadFormat = FrontFormatter.formatCurrency(expenseLead);
+            List<Evolution> evolutionByDate = evolutionService.getEvolutionData();
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("nbCustomers", nbCustomers);
@@ -111,14 +116,15 @@ public class DashboardApi {
             response.put("totalExpense", totalExpense);
             response.put("totalExpenseFormat", totalExpenseFormat);
             response.put("customerExpense", customerExpense);
-            
-            // Convertir la Map en JSON string et retourner directement la chaîne
+            response.put("expenseTicket", expenseTicket);
+            response.put("expenseTicketFormat", expenseTicketFormat);
+            response.put("expenseLead", expenseLead);
+            response.put("expenseLeadFormat", expenseLeadFormat);
+            response.put("evolutionByDate", evolutionByDate);
             return objectMapper.writeValueAsString(response);
 
         } catch (Exception e) {
             e.printStackTrace();
-
-            // En cas d'erreur, renvoyer un JSON sous forme de String
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
             errorResponse.put("error", e.getMessage());
@@ -138,7 +144,6 @@ public class DashboardApi {
             
         } catch (Exception e) {
             e.printStackTrace();
-            // Retourner une réponse d'erreur avec un statut HTTP 500 (Internal Server Error)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                  .body(null);
         }
@@ -151,7 +156,6 @@ public class DashboardApi {
             
         } catch (Exception e) {
             e.printStackTrace();
-            // Retourner une réponse d'erreur avec un statut HTTP 500 (Internal Server Error)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                  .body(null);
         }

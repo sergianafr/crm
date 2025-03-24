@@ -58,5 +58,23 @@ public class ExpenseService {
       return save(expe);
    }
 
+   public BigDecimal getTotalLead(){
+      List<Lead> leads = leadService.findAll();
+      BigDecimal total = BigDecimal.ZERO;
+      for (Lead lead : leads) {
+         total = total.add(leadService.getTotalExpense(lead));
+      }
+      
+      return total;
+   }
+   public BigDecimal getTotalTicket(){
+      List<Ticket> leads = ticketService.findAll();
+      BigDecimal total = BigDecimal.ZERO;
+      for (Ticket lead : leads) {
+         total = total.add(ticketService.getTotalExpense(lead));
+      }
+      return total;
+   }
+
    
 }
