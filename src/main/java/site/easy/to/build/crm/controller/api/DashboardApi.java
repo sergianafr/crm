@@ -29,6 +29,7 @@ import site.easy.to.build.crm.service.BudgetService;
 import site.easy.to.build.crm.service.DashboardService;
 import site.easy.to.build.crm.service.EvolutionService;
 import site.easy.to.build.crm.service.ExpenseService;
+import site.easy.to.build.crm.service.RateService;
 import site.easy.to.build.crm.service.customer.CustomerService;
 import site.easy.to.build.crm.service.lead.LeadService;
 import site.easy.to.build.crm.service.ticket.TicketService;
@@ -56,6 +57,7 @@ public class DashboardApi {
     @Autowired AuthenticationUtils authenticationUtils;
     @Autowired ExpenseService expenseService;
     @Autowired EvolutionService evolutionService;
+    @Autowired RateService rateService;
     private final static ObjectMapper mapper = JacksonConfig.objectMapper();
 
     @GetMapping("/o")
@@ -105,6 +107,7 @@ public class DashboardApi {
             BigDecimal expenseLead = expenseService.getTotalLead();
             String expenseLeadFormat = FrontFormatter.formatCurrency(expenseLead);
             List<Evolution> evolutionByDate = evolutionService.getEvolutionData();
+            Double actualRate = rateService.findMax().getRate();
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("nbCustomers", nbCustomers);
@@ -121,6 +124,7 @@ public class DashboardApi {
             response.put("expenseLead", expenseLead);
             response.put("expenseLeadFormat", expenseLeadFormat);
             response.put("evolutionByDate", evolutionByDate);
+            response.put("rate", actualRate);
             return objectMapper.writeValueAsString(response);
 
         } catch (Exception e) {
