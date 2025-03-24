@@ -28,7 +28,7 @@ public class ExpenseService {
    }
 
    public Expense updateLead(ExpenseRequest request, User connected){
-      int leadId = request.getId();
+      int leadId = request.getIdUser();
       BigDecimal amount = request.getAmount();
       Lead l = leadService.findByLeadId(leadId);
       List<Expense> exp = expenseRepository.findByLead(l);
@@ -43,7 +43,7 @@ public class ExpenseService {
       return save(expe);
    }
    public Expense updateTicket(ExpenseRequest request, User connected){
-      int ticketId = request.getId();
+      int ticketId = request.getIdUser();
       BigDecimal amount = request.getAmount();
       Ticket l = ticketService.findByTicketId(ticketId);
       List<Expense> exp = expenseRepository.findByTicket(l);

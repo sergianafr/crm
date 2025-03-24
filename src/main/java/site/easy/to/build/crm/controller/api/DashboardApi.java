@@ -178,13 +178,13 @@ public class DashboardApi {
         }
     }
 
-    @PostMapping("/leads/update-expense")
-    public String updateExpenseLead(@RequestBody ExpenseRequest entity) {
+    @PostMapping("/leads/update/{id}")
+    public String updateExpenseLead(@PathVariable int id, @RequestBody ExpenseRequest entity) {
         System.out.println(entity.getAmount());
         try{
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
-            System.out.println(connected.getId());
+            // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User connected = userService.findById(entity.getIdUser());
+            // System.out.println(connected.getId());
             expenseService.updateLead(entity, connected);
             return "{\"success\": true}";
         }catch(Exception e){
