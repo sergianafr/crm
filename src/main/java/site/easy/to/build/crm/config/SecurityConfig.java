@@ -62,7 +62,7 @@ public class SecurityConfig {
                 .csrfTokenRepository(httpSessionCsrfTokenRepository)
         );
         http.csrf(csrf -> csrf
-        .ignoringRequestMatchers("/api/rate/save", "/api/dashboards/**"));
+        .ignoringRequestMatchers("/api/rate/save", "/api/dashboards/**", "api/**"));
 
         // Activer CORS dans Spring Security
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
@@ -70,6 +70,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/api/rate/save").permitAll()
                         .requestMatchers("/api/dashboards/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/set-employee-password/**").permitAll()
                         .requestMatchers("/change-password/**").permitAll()
@@ -111,11 +112,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:5174")); // Origines autorisées
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Méthodes autorisées
-        configuration.setAllowedHeaders(List.of("*")); // En-têtes autorisés
-        configuration.setAllowCredentials(true); // Autoriser les cookies
-        configuration.setMaxAge(3600L); // Durée de vie du cache CORS
+        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:5174")); 
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); 
+        configuration.setAllowedHeaders(List.of("*")); 
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Appliquer à tous les endpoints

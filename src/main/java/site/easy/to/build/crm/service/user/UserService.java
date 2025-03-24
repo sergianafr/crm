@@ -21,5 +21,6 @@ public interface UserService {
     public void deleteById(int id);
 
     public List<User> findAll();
+    public boolean isUserManager(User u );
 
 }
