@@ -187,20 +187,21 @@
             </div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
+
                 $(document).ready(function () {
                     // Écouter l'événement 'change' sur le champ expAmount
                     $('#amount').on('change', function () {
                         // Récupérer les valeurs de customerId et expAmount
                         const customerId = $('#customerId').val();
                         const expAmount = $('#amount').val();
-
+                
                         if (customerId && expAmount) {
                             // Préparer les données à envoyer
                             const requestData = {
                                 customerId: customerId,
                                 amount: expAmount
                             };
-
+                
                             $.ajax({
                                 url: '/api/customer/checkExpense',
                                 type: 'GET',
@@ -209,13 +210,15 @@
                                     // Cacher tous les messages
                                     $('#validMessage').hide();
                                     $('#warningMessage').hide();
-
+                
                                     // Afficher le message approprié
-                                    if (response === 'valid') {
+                                    if (response.status === 'valid') {
                                         $('#validMessage').show(); 
-                                    } else if (response === 'superior') {
+                                    } else if (response.status === 'superior') {
+                                        $('#warningMessage').text(`The total expense for this client has exceeded the max rate (${response.maxRate}%-${response.maxValueRate}).`);
                                         $('#warningMessage').show(); // Afficher la carte jaune
-                                    } else if (response === 'exceed') {
+                                    } else if (response.status === 'exceed') {
+                                        $('#exceedModal .modal-body').html(`<p>The total expense for this customer has exceeded the budget rate (${response.maxRate}%-${response.maxValueRate})<br> Customer Budget:${response.totalBudget}<br> Still want to proceed?</p>`);
                                         $('#exceedModal').modal('show'); // Afficher le modal
                                     }
                                 },
@@ -228,18 +231,18 @@
                             alert('Veuillez sélectionner un client et saisir un montant.');
                         }
                     });
-
+                
                     // Gérer le clic sur le bouton "Procéder" dans le modal
                     $('#proceedButton').on('click', function () {
-                        alert('Vous avez choisi de procéder avec le budget dépassé.');
+                        // alert('Vous avez choisi de procéder avec le budget dépassé.');
                         $('#exceedModal').modal('hide'); // Fermer le modal
                     });
+                
                     // Gérer le clic sur le bouton "Annuler" dans le modal
                     $('.modal-footer .btn-secondary').on('click', function() {
                         $('#amount').val('0'); // Réinitialiser la valeur du champ amount à 0
                         $('#exceedModal').modal('hide'); // Fermer le modal
                     });
-
                 });
             </script>
             <!-- ============================================================== -->
