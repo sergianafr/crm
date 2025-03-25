@@ -178,14 +178,14 @@ public class DashboardApi {
         }
     }
 
-    @PostMapping("/leads/update-expense")
-    public String updateExpenseLead(@RequestBody ExpenseRequest entity) {
+    @PostMapping("/leads/update/{id}")
+    public String updateExpenseLead(@PathVariable int id, @RequestBody ExpenseRequest entity) {
         System.out.println(entity.getAmount());
         try{
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
-            System.out.println(connected.getId());
-            expenseService.updateLead(entity, connected);
+            // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User connected = userService.findById(entity.getIdUser());
+            // System.out.println(connected.getId());
+            expenseService.updateLead(entity, id);
             return "{\"success\": true}";
         }catch(Exception e){
             e.printStackTrace();
@@ -217,28 +217,28 @@ public class DashboardApi {
         }
     }
     
-    @PostMapping("/tickets/update-expense")
-    public String updateExpenseTicket(@RequestBody ExpenseRequest entity) {
+    @PostMapping("/tickets/update/{id}")
+    public String updateExpenseTicket(@PathVariable int id, @RequestBody ExpenseRequest entity) {
         System.out.println(entity.getAmount());
         try{
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User connected = userService.findById(entity.getIdUser());
             System.out.println(connected.getId());
-            expenseService.updateTicket(entity, connected);
+            expenseService.updateTicket(entity, id);
             return "{\"success\": true}";
         }catch(Exception e){
             e.printStackTrace();
             return "{\"success\": false}";
         } 
     }
-    @PostMapping("/leads/delete-expense")
-    public String deleteExpenseLead(@RequestBody ExpenseRequest entity) {
+    @PostMapping("/leads/expense/delete/{id}")
+    public String deleteExpenseLead(@PathVariable int id,@RequestBody ExpenseRequest entity) {
         System.out.println(entity.getAmount());
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            User connected = userService.findById(entity.getIdUser());
             System.out.println(connected.getId());
-            expenseService.updateLead(entity, connected);
+            expenseService.updateLead(entity, id);
             return "{\"success\": true}";
         }catch(Exception e){
             e.printStackTrace();
@@ -246,14 +246,14 @@ public class DashboardApi {
         }
         
     }
-    @PostMapping("/tickets/delete-expense")
-    public String deleteTicketLead(@RequestBody ExpenseRequest entity) {
+    @PostMapping("/tickets/expense/delete/{id}")
+    public String deleteTicketLead(@PathVariable int id, @RequestBody ExpenseRequest entity) {
         System.out.println(entity.getAmount());
         try{
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            User connected = userService.findById(entity.getIdUser());
             System.out.println(connected.getId());
-            expenseService.updateTicket(entity, connected);
+            expenseService.updateTicket(entity, id);
             return "{\"success\": true}";
         }catch(Exception e){
             e.printStackTrace();

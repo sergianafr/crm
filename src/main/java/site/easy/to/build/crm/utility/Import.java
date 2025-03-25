@@ -9,13 +9,17 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Import {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;    
     public static List<String[]> readCsvFile(MultipartFile file) throws Exception{
         List<String[]> records = new ArrayList<String[]>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
@@ -90,25 +94,8 @@ public class Import {
             throw e;
         }
     }
-    // private void insertToTemp(List<String[]> data, String[] dataType, Connect c)throws Exception{
-    //     String insertSQL = "INSERT INTO temp_espace (nom, prix_heure) VALUES (?, ?);";
-    //     try {
-    //         try (PreparedStatement pstmt = c.getConnex().prepareStatement(insertSQL)) {
-    //             for (int i = 1; i < data.size(); i++) { // Commencer à 1 pour ignorer l'en-tête
-    //                 String[] row = data.get(i);
-    //                 pstmt.setString(1, row[0]);  // Colonne "name"
-    //                 pstmt.setDouble(2, Double.parseDouble(row[1])); // Colonne "age"
-    //                 pstmt.addBatch();
-    //             }
-    //             pstmt.executeBatch();
-    //         }
-    //     } catch (Exception e) {
-    //         throw e;
-    //     }
-    // }
-    public static void transformData(List<String[]> data, String[] dataType){
 
-    }
+    
     public static List<Object> validateData(String[] data, String[] dataType, int[] notNull, int rowCount,List<String> errors){
         List<Object> transformed = new ArrayList<>();
         int count = 0;
@@ -162,5 +149,9 @@ public class Import {
             query+="?,";
         }
         return query.substring(0, query.length()-1)+")";
+    }
+    public static boolean controlUnique(String tableName, String column, Object value){
+
+        return false;
     }
 }

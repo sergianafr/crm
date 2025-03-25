@@ -2,6 +2,7 @@ package site.easy.to.build.crm.service.customer;
 
 import org.springframework.stereotype.Service;
 import site.easy.to.build.crm.repository.CustomerLoginInfoRepository;
+import site.easy.to.build.crm.utility.ImportTemplate;
 import site.easy.to.build.crm.entity.CustomerLoginInfo;
 
 @Service
@@ -36,5 +37,13 @@ public class CustomerLoginInfoServiceImpl implements CustomerLoginInfoService {
     @Override
     public void delete(CustomerLoginInfo customerLoginInfo) {
         customerLoginInfoRepository.delete(customerLoginInfo);
+    }
+
+
+    @Override
+    public CustomerLoginInfo saveFromCsv(String[] csvData){
+        CustomerLoginInfo cu = new CustomerLoginInfo();
+        cu.setEmail(csvData[0]);
+        return customerLoginInfoRepository.save(cu);
     }
 }

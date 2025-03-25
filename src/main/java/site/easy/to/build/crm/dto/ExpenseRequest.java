@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExpenseRequest {
-    private int id;
+    private int idUser;
     private BigDecimal amount;
 }

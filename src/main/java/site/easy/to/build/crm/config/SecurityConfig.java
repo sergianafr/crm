@@ -119,7 +119,7 @@ public class SecurityConfig {
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Appliquer à tous les endpoints
+        source.registerCorsConfiguration("/**", configuration); 
         return source;
     }
     @Bean
