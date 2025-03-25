@@ -8,17 +8,23 @@ import org.springframework.stereotype.Service;
 import site.easy.to.build.crm.dto.TicketDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Expense;
+import site.easy.to.build.crm.entity.HistoryExpense;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.repository.TicketRepository;
+import site.easy.to.build.crm.service.generator.GeneratorService;
+import site.easy.to.build.crm.utility.Formatter;
 import site.easy.to.build.crm.utility.FrontFormatter;
 import site.easy.to.build.crm.entity.Ticket;
+import site.easy.to.build.crm.entity.User;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -26,6 +32,7 @@ import java.util.stream.Collectors;
 @Service
 public class TicketServiceImpl implements TicketService{
     @Autowired private ExpenseRepository expenseRepository;
+    @Autowired private GeneratorService generatorService;
     private final TicketRepository ticketRepository;
 
     public TicketServiceImpl(TicketRepository ticketRepository) {
@@ -170,5 +177,64 @@ public class TicketServiceImpl implements TicketService{
         }
 
         return dto;
+    }
+    
+    @Override
+    public Ticket instanceAndGenerate(String[] csv, List<Customer> customers, User connected){
+        Ticket t = new Ticket();
+        t.setManager(connected);
+        t.setEmployee(connected);
+        t.setStatus(csv[3]);
+        t.setSubject(csv[1]);
+        t.setPriority(generatorService.generatePriority());
+        t.setCreatedAt(generatorService.generateDate(LocalDateTime.of(2025, 02, 01, 1, 1, 1), LocalDateTime.of(2025, 03, 25, 0, 0, 0) ));
+        t.setDescription(generatorService.generateLoremIpsum());
+
+        HistoryExpense h = new HistoryExpense();
+        h.setDateUpdate(t.getCreatedAt());
+        h.setUser(connected);
+        List<HistoryExpense> historyExpenses = new ArrayList<>();
+        historyExpenses.add(h);
+
+        Expense expense = new Expense();
+        expense.setTicket(t);
+        expense.setAmount(new BigDecimal(Formatter.formatToDouble(csv[4])));
+        expense.setDescriptions(t.getSubject());
+        expense.setUser(connected);
+        h.setExpense(expense);
+        expense.setHistoryExpenses(historyExpenses);
+
+        List<Expense> exps = new ArrayList<>();
+        exps.add(expense);
+        t.setExpenses(exps);
+
+        return t;
+    }
+    public Customer findInListByMail(String email, List<Customer> customers){
+        if (customers == null || customers.isEmpty()) {
+            System.out.println("null ");
+            return null;
+        }
+        
+        return customers.stream()
+                .filter(info -> email != null && email.equals(info.getEmail()))
+                .findFirst()
+                .orElse(null);
+    }
+    @Override
+    public List<Ticket> instanceAll(List<String[]> csv,  List<Customer> customers, User connected){
+        List<Ticket> list = new ArrayList<>();
+        for (String[] data : csv) {
+            Ticket t = instanceAndGenerate(data, customers, connected);
+            System.out.println(findInListByMail(data[0], customers)+" "+data[0]);
+            t.setCustomer(findInListByMail(data[0], customers));
+            list.add(t);
+        }
+        return list;
+    }
+
+    @Override
+    public List<Ticket> saveAll(List<Ticket> saveAll){
+        return ticketRepository.saveAll(saveAll);
     }
 }

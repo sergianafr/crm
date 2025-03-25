@@ -25,29 +25,29 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
     
-    @GetMapping("/import-page")
-    public String getMethodName(Authentication authentication){
-        int userId = authenticationUtils.getLoggedInUserId(authentication);
-        return "import-page";
-    }
-    @PostMapping("/import")
-    public String importEmployees(@RequestParam("file") MultipartFile file, Model model) {
-        List<String> errors = new ArrayList<>();
-        try {
-            errors = employeeService.importEmp(file);
-            if(errors != null){
-                model.addAttribute("errors", errors);
-            } else {
-                System.out.println("Importation réussie");
-                model.addAttribute("success", "Importation réussie");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            errors.add(e.getMessage());
-            model.addAttribute("errors", errors);
-        } 
-        return "import-page";
-    }
+    // @GetMapping("/import-page")
+    // public String getMethodName(Authentication authentication){
+    //     int userId = authenticationUtils.getLoggedInUserId(authentication);
+    //     return "import-page";
+    // }
+    // @PostMapping("/import")
+    // public String importEmployees(@RequestParam("file") MultipartFile file, Model model) {
+    //     List<String> errors = new ArrayList<>();
+    //     try {
+    //         errors = employeeService.importEmp(file);
+    //         if(errors != null){
+    //             model.addAttribute("errors", errors);
+    //         } else {
+    //             System.out.println("Importation réussie");
+    //             model.addAttribute("success", "Importation réussie");
+    //         }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //         errors.add(e.getMessage());
+    //         model.addAttribute("errors", errors);
+    //     } 
+    //     return "import-page";
+    // }
     //  @PostMapping("/import")
     // public String importEmployees(@RequestParam("file") MultipartFile file, Model model) {
     //     try {

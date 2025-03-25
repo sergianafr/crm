@@ -3,6 +3,7 @@ package site.easy.to.build.crm.service.lead;
 import site.easy.to.build.crm.dto.LeadDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
+import site.easy.to.build.crm.entity.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,4 +38,8 @@ public interface LeadService {
 
     public BigDecimal getTotalExpense(int leadId);
     public BigDecimal getTotalExpense(Lead l);
+    public Lead instanceAndGenerate(String[] csv, List<Customer> customers, User connected);
+    public List<Lead> instanceAll(List<String[]> csv,  List<Customer> customers, User connected);
+    // public Lead instanceAndGenerate(String[] csv);
+    public List<Lead> saveAll(List<Lead> saveAll);
 }

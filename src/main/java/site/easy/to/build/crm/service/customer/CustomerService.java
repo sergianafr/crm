@@ -6,6 +6,8 @@ import site.easy.to.build.crm.dto.CustomerDto;
 import site.easy.to.build.crm.dto.CustomerTBDto;
 import site.easy.to.build.crm.dto.CustomerTEDto;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.CustomerLoginInfo;
+import site.easy.to.build.crm.entity.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,4 +36,11 @@ public interface CustomerService {
     public BigDecimal getTotalExpense(int customerId);
     public BigDecimal getTotalExpense(Customer c);
 
+    public Customer instanceAndGenerate(String[] csv);
+    public CustomerLoginInfo findProfile(Customer cu, List<CustomerLoginInfo> list);
+     public List<Customer> instanceAll(List<String[]> list, List<CustomerLoginInfo> info, User userId);
+     public List<Customer> saveAll(List<Customer> list);
+     public List<Customer> saveCustomerWProfile(List<String[]> csv, User userId);
+     public List<site.easy.to.build.crm.utility.Error> checkCustomerError(List<String[]> csv);
+     public Customer findInListByMail(String email, List<Customer> customers);
 }

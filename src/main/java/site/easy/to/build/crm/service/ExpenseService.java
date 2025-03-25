@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import site.easy.to.build.crm.dto.ExpenseRequest;
 import site.easy.to.build.crm.entity.Expense;
+import site.easy.to.build.crm.entity.HistoryExpense;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.entity.User;
@@ -29,6 +30,11 @@ public class ExpenseService {
         return expense;
    }
 
+   public Expense saveWHistory(Expense expense, HistoryExpense history){
+      expenseRepository.save(expense);
+        historyExpenseService.save(history);
+        return expense;
+   }
    public Expense updateLead(ExpenseRequest request,int leadId){
       User connected = userService.findById(request.getIdUser());
       BigDecimal amount = request.getAmount();

@@ -23,7 +23,7 @@ public class ReinitService {
         for (String table : tables) {
             String tabString = table.toLowerCase();
             if(!tabString.equals("oauth_users") && !tabString.equals("user_profile") && !tabString.equals("users") && !tabString.equals("roles") && !tabString.equals("user_roles")){
-                jdbcTemplate.execute("TRUNCATE TABLE " + table);
+                jdbcTemplate.execute("DELETE FROM " + table);
                 
                 System.out.println(table+" tab "+i++);
             }
