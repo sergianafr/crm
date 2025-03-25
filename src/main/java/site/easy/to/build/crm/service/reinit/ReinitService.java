@@ -32,4 +32,5 @@ public class ReinitService {
         // Réactiver les contraintes de clé étrangère
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
     }
+    
 }
