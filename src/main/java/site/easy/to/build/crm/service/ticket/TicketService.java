@@ -4,6 +4,7 @@ import site.easy.to.build.crm.dto.TicketDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
+import site.easy.to.build.crm.entity.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,4 +39,7 @@ public interface TicketService {
     void deleteAllByCustomer(Customer customer);
     public BigDecimal getTotalExpense(int ticketId);
     public BigDecimal getTotalExpense(Ticket l);
+    public Ticket instanceAndGenerate(String[] csv, List<Customer> customers, User connected);
+    public List<Ticket> instanceAll(List<String[]> csv,  List<Customer> customers, User connected);
+    public List<Ticket> saveAll(List<Ticket> saveAll);
 }

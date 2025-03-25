@@ -221,6 +221,17 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElse(null);
     }
     @Override
+    public Customer findInListByMail(String email, List<Customer> customers){
+        if (customers == null || customers.isEmpty()) {
+            return null;
+        }
+        
+        return customers.stream()
+                .filter(info -> email != null && email.equals(info.getEmail()))
+                .findFirst()
+                .orElse(null);
+    }
+    @Override
     public List<Customer> instanceAll(List<String[]> list, List<CustomerLoginInfo> info, User userId){
         List<Customer> listCu = new ArrayList<>();
         for (int i = 1; i < list.size(); i++) {
@@ -238,11 +249,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Transactional
     @Override
-    public void saveCustomerWProfile(List<String[]> csv, User userId){
+    public List<Customer> saveCustomerWProfile(List<String[]> csv, User userId){
         List<CustomerLoginInfo> profiles = customerLoginInfoService.instanceAll(csv);
         customerLoginInfoService.saveAll(profiles);
         List<Customer> customers = instanceAll(csv, profiles, userId);
-        saveAll(customers);
+        return saveAll(customers);
     }
 
     // @Transactional

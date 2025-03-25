@@ -8,15 +8,23 @@ import org.springframework.stereotype.Service;
 import site.easy.to.build.crm.dto.LeadDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Expense;
+import site.easy.to.build.crm.entity.HistoryExpense;
 import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.repository.LeadRepository;
+import site.easy.to.build.crm.service.customer.CustomerService;
+import site.easy.to.build.crm.service.generator.GeneratorService;
+import site.easy.to.build.crm.utility.Formatter;
 import site.easy.to.build.crm.utility.FrontFormatter;
 import site.easy.to.build.crm.entity.Lead;
+import site.easy.to.build.crm.entity.Ticket;
+import site.easy.to.build.crm.entity.User;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -24,6 +32,8 @@ import java.util.stream.Collectors;
 @Service
 public class LeadServiceImpl implements LeadService {
 
+    // @Autowired CustomerService customerS:ervice;
+    @Autowired GeneratorService generatorService;
     @Autowired private ExpenseRepository expenseRepository;
     private final LeadRepository leadRepository;
 
@@ -155,4 +165,62 @@ public class LeadServiceImpl implements LeadService {
         }
         return total;
     }
+    public Customer findInListByMail(String email, List<Customer> customers){
+        if (customers == null || customers.isEmpty()) {
+            return null;
+        }
+        
+        return customers.stream()
+                .filter(info -> email != null && email.equals(info.getEmail()))
+                .findFirst()
+                .orElse(null);
+    }
+    @Override
+    public Lead instanceAndGenerate(String[] csv, List<Customer> customers, User connected){
+        Lead l = new Lead();
+        // Customer c = customerService.findInListByMail(csv[0], customers);
+        // l.setCustomer(c);
+        l.setEmployee(connected);
+        l.setManager(connected);
+        l.setName(csv[1]);
+        l.setPhone(generatorService.generatePhone());
+        l.setStatus(csv[3]);
+        l.setCreatedAt(generatorService.generateDate(LocalDateTime.of(2025, 02, 01, 1, 1, 1), LocalDateTime.of(2025, 03, 25, 0, 0, 0) ));
+        
+        HistoryExpense h = new HistoryExpense();
+        h.setDateUpdate(l.getCreatedAt());
+        h.setUser(connected);
+        List<HistoryExpense> historyExpenses = new ArrayList<>();
+        historyExpenses.add(h);
+
+        List<Expense> exps = new ArrayList<>();
+        Expense expense = new Expense();
+        expense.setLead(l);
+        expense.setAmount(new BigDecimal(Formatter.formatToDouble(csv[4])));
+        expense.setDescriptions(l.getName());
+        expense.setUser(connected);
+        h.setExpense(expense);
+        expense.setHistoryExpenses(historyExpenses);
+        
+        exps.add(expense);
+        l.setExpenses(exps);
+
+        return l;
+    }
+
+    @Override
+    public List<Lead> instanceAll(List<String[]> csv,  List<Customer> customers, User connected){
+        List<Lead> list = new ArrayList<>();
+        for (String[] data : csv) {
+            Lead t = instanceAndGenerate(data, customers, connected);
+            t.setCustomer(findInListByMail(data[0], customers));
+            list.add(t);
+        }
+        return list;
+    }
+    @Override
+    public List<Lead> saveAll(List<Lead> saveAll){
+        return leadRepository.saveAll(saveAll);
+    }
+    // public Expense instanceAndGenerateExpense()
 }

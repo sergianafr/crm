@@ -107,4 +107,9 @@ public class Expense {
                 ", lead=" + lead +
                 '}';
     }
+    public void setHistoryExpenses(List<HistoryExpense> historyExpenses) {
+        this.historyExpenses = historyExpenses;
+    }public List<HistoryExpense> getHistoryExpenses() {
+        return historyExpenses;
+    }
 }

@@ -40,6 +40,7 @@ public interface CustomerService {
     public CustomerLoginInfo findProfile(Customer cu, List<CustomerLoginInfo> list);
      public List<Customer> instanceAll(List<String[]> list, List<CustomerLoginInfo> info, User userId);
      public List<Customer> saveAll(List<Customer> list);
-     public void saveCustomerWProfile(List<String[]> csv, User userId);
+     public List<Customer> saveCustomerWProfile(List<String[]> csv, User userId);
      public List<site.easy.to.build.crm.utility.Error> checkCustomerError(List<String[]> csv);
+     public Customer findInListByMail(String email, List<Customer> customers);
 }

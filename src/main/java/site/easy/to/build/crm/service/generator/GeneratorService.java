@@ -1,7 +1,9 @@
 package site.easy.to.build.crm.service.generator;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public class GeneratorService {
         location.put("address", faker.address().streetAddress());
         location.put("city", faker.address().city());
         location.put("state", faker.address().state()); // Ou region pour certains pays
-        location.put("country", faker.address().country());
+        location.put("country", "France");
 
         return location;
     }
@@ -56,5 +58,10 @@ public class GeneratorService {
                .toInstant()
                .atZone(ZoneId.systemDefault())
                .toLocalDateTime();
+    }
+    public  String generatePriority(){
+        
+        String[] myList = Arrays.asList("low", "medium", "high", "closed", "urgent", "critical").toArray(new String[0]);
+        return faker.options().option(myList);
     }
 }

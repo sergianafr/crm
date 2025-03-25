@@ -120,6 +120,45 @@ public class Formatter {
         return null;
     }
 
+    public static String formatToDouble(String numberStr){
+        if (numberStr == null || numberStr.trim().isEmpty()) {
+            return "0.0";
+        }
+
+        // Supprimer les espaces et autres caractères non désirés
+        String cleaned = numberStr.replaceAll("[^\\d.,-]", "");
+
+        // Déterminer le séparateur décimal
+        char decimalSeparator = cleaned.contains(",") ? ',' : '.';
+
+        // Supprimer les séparateurs de milliers (tout sauf le dernier séparateur décimal)
+        StringBuilder builder = new StringBuilder();
+        boolean decimalFound = false;
+        
+        for (int i = cleaned.length() - 1; i >= 0; i--) {
+            char c = cleaned.charAt(i);
+            if (c == decimalSeparator) {
+                if (!decimalFound) {
+                    builder.append('.');
+                    decimalFound = true;
+                }
+            } else if (Character.isDigit(c) || c == '-') {
+                builder.append(c);
+            }
+        }
+
+        String result = builder.reverse().toString();
+        Double.parseDouble(result);
+        return result;
+        // Validation finale
+        // try {
+        //     Double.parseDouble(result);
+        //     return result;
+        // } catch (NumberFormatException e) {
+        //     throw new ParseException("Impossible de parser le nombre: " + numberStr, 0);
+        // }
+    }
+
     /**
      * Transforme une heure de n'importe quel format en format MySQL "HH:mm:ss".
      *

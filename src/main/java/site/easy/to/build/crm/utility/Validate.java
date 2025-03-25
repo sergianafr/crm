@@ -24,7 +24,10 @@ public class Validate {
         return email.contains("@") && email.contains(".");
     }
     public static boolean checkAmount(String amount){
-        return amount.replace(",", ".").contains("-");
+        if(Double.valueOf(amount)<0){
+            return false;
+        }
+        return true;
     }
     public static boolean checkType(String type){
         type.toLowerCase();
@@ -33,10 +36,19 @@ public class Validate {
         } return false;
     }
 
-    public static boolean isValidStatus(String type,String status) {
-        if(type.toLowerCase().equals("ticket")){
-            return status != null && TICKET_STATUS.contains(status.trim().toLowerCase());
-        } return status != null && LEAD_STATUS.contains(status.trim().toLowerCase());
+    public static boolean isValidStatus(String type, String status) {
+        if (type == null || status == null) {
+            return false;
+        }
+        
+        switch (type.toLowerCase()) {
+            case "ticket":
+                return TICKET_STATUS.contains(status.trim().toLowerCase());
+            case "lead":
+                return LEAD_STATUS.contains(status.trim().toLowerCase());
+            default:
+                return false; // ou lever une exception si le type est invalide
+        }
     }
     public static boolean isValidStatus(String status) {
         return status != null && TICKET_STATUS.contains(status.trim().toLowerCase()) || status != null && LEAD_STATUS.contains(status.trim().toLowerCase());
@@ -74,6 +86,16 @@ public class Validate {
         }
         
         return errors;
+    }
+
+    public static boolean containsValue(List<String[]> list, int columnIndex, String searchValue) {
+        // if (searchValue == null) {
+        //     return containsInColumn(list, columnIndex, null);
+        // }
+        
+        return list.stream()
+            .filter(row -> row != null && columnIndex < row.length && row[columnIndex] != null)
+            .anyMatch(row -> row[columnIndex].equalsIgnoreCase(searchValue));
     }
     //     // Convertir en minuscules et supprimer les espaces avant/après
     //     String normalizedType = type.toLowerCase().trim();
