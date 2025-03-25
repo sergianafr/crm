@@ -9,10 +9,24 @@
     <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
     <link th:href="@{/css/style.min.css}" rel="stylesheet">
     <link th:href="@{/css/pages/inbox.css}" rel="stylesheet">
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <style>
+        .error-card {
+            border-left: 4px solid #dc3545;
+        }
+        .error-badge {
+            background-color: #dc3545;
+        }
+        .file-badge {
+            background-color: #e2edf7;
+        }
+        .error-details {
+            font-size: 0.9rem;
+        }
+        .error-message {
+            white-space: pre-wrap;
+            color: #dc3545;
+        }
+    </style>
 </head>
 
 <body class="skin-blue fixed-layout">
@@ -33,25 +47,77 @@
             <div th:insert="~{/general/page-titles.html}"></div>
 
             <!-- Messages d'alerte -->
-            <div class="row mt-3" th:if="${errors != null}">
-                <div class="col-lg-8 mx-auto">
-                    <div th:if="${errors.empty}" class="alert alert-success alert-dismissible fade show">
-                        <i class="bi bi-check-circle me-2"></i> Importation réussie !
+            <div class="row  mt-3">
+                <div class="col">
+                    <!-- Message de succès -->
+                    <div th:if="${importErrors != null and importErrors.empty}" 
+                         class="alert alert-success alert-dismissible fade show">
+                        <i class="bi bi-check-circle me-2"></i> Import successful!
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                    <div th:unless="${errors.empty}" class="alert alert-danger alert-dismissible fade show">
-                        <h4><i class="bi bi-exclamation-triangle me-2"></i>Erreurs lors de l'importation :</h4>
-                        <ul class="mb-0">
-                            <li th:each="error : ${errors}" th:text="${error}"></li>
-                        </ul>
+                    
+                    <!-- Erreur globale -->
+                    <div th:if="${globalError != null}" 
+                         class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <span th:text="${globalError}"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    
+                    <!-- Carte des erreurs d'import -->
+                    <div th:if="${importErrors != null and !importErrors.empty}" 
+                         class="card error-card mb-4">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                Error during importation
+                            </h5>
+                            <span class="badge error-badge rounded-pill">
+                                <span th:text="${importErrors.size()}"></span>errors
+                            </span>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-sm mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th width="20%">File</th>
+                                            <th width="15%">Row</th>
+                                            <th width="15%">Col</th>
+                                            <th>Message</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="error : ${importErrors}">
+                                            <td>
+                                                <span class="badge file-badge rounded-pill" 
+                                                      th:text="${error.file}">File</span>
+                                            </td>
+                                            <td th:text="${error.rowNum != 0} ? ${error.rowNum} : 'N/A'">Ligne</td>
+                                            <td th:text="${error.colNum != 0} ? ${error.colNum} : 'N/A'">Colonne</td>
+                                            <td class="error-message" th:text="${error.message}">Message</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Please correct these errors before importing files
+                                </small>
+                                
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Formulaire d'import -->
-            <div class="row justify-content-center mt-4">
-                <div class="col-lg-8">
+            <div class="row ">
+                <div class="col">
                     <div class="card file-upload-card">
                         <div class="card-body p-4">
                             <h4 class="card-title mb-4 text-primary">
@@ -68,7 +134,6 @@
                                     </label>
                                     <input type="file" class="form-control" name="customers" id="employeeFile" required
                                            accept=".csv, application/vnd.ms-excel, text/csv">
-                                    <!-- <div class="form-text">Format attendu : Nom, Prénom, Email, Département</div> -->
                                 </div>
                                 
                                 <!-- Fichier Départements -->
@@ -78,7 +143,6 @@
                                     </label>
                                     <input type="file" class="form-control" name="leadticket" id="departmentFile"
                                            accept=".csv, application/vnd.ms-excel, text/csv">
-                                    <!-- <div class="form-text">Optionnel - Format attendu : Code, Nom Département</div> -->
                                 </div>
                                 <div class="mb-4">
                                     <label for="departmentFile" class="file-upload-label">
@@ -86,7 +150,6 @@
                                     </label>
                                     <input type="file" class="form-control" name="budget" id="departmentFile"
                                            accept=".csv, application/vnd.ms-excel, text/csv">
-                                    <!-- <div class="form-text">Optionnel - Format attendu : Code, Nom Département</div> -->
                                 </div>
                                 
                                 <div class="d-flex justify-content-between align-items-center">
