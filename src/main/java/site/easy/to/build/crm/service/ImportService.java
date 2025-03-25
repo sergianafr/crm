@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import site.easy.to.build.crm.entity.Budget;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
@@ -64,17 +65,19 @@ public class ImportService {
         leadService.saveAll(savedLeads);
     }
 
-    public List<Error> importData(MultipartFile customerFile, MultipartFile ticketAndLead, User connected)throws Exception{
+    public List<Error> importData(MultipartFile customerFile, MultipartFile ticketAndLead, MultipartFile budgetFile, User connected)throws Exception{
         try {
             
             List<String[]> csv = new ImportTemplate().readCsvFile(customerFile);
             List<String[]> leadtickcsv = new ImportTemplate().readCsvFile(ticketAndLead);
+            List<String[]> budgetcsv = new ImportTemplate().readCsvFile(budgetFile);
             List<Error> errors = customerService.checkCustomerError(csv);
             errors.addAll(checkErrorTicketLead(leadtickcsv, csv));
-    
+            errors.addAll(budgetService.checkBudgetError(budgetcsv, csv));
             if(errors.isEmpty()){
                 List<Customer> customers2 = customerService.saveCustomerWProfile(csv, connected);
                 saveTicketAndLead(leadtickcsv, customers2, connected);
+                List<Budget> budgets = budgetService.saveImport(budgetcsv, customers2, connected);
             }
             else {
                 for (Error error : errors) {

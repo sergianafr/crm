@@ -33,29 +33,17 @@ public class ImportController {
     @Autowired private UserService userService;
     @Autowired private ImportService importService;
     @PostMapping()
-    public String importData(@RequestParam("customers") MultipartFile customers,@RequestParam("leadticket") MultipartFile leadticket, Model model, org.springframework.security.core.Authentication authentication) {
+    public String importData(@RequestParam("customers") MultipartFile customers,@RequestParam("leadticket") MultipartFile leadticket, @RequestParam("budget") MultipartFile budget,Model model, org.springframework.security.core.Authentication authentication) {
         // List<String> errors = new ArrayList<>();
         try {
             int userId = authenticationUtils.getLoggedInUserId(authentication);
             User conn = userService.findById(userId);
-            importService.importData(customers, leadticket, conn);
-            // List<String[]> csv = new ImportTemplate().readCsvFile(customers);
-            // List<String[]> leadtickcsv = new ImportTemplate().readCsvFile(leadticket);
-            // List<Error> errors = customerService.checkCustomerError(csv);
-            // errors.addAll(importService.checkErrorTicketLead(leadtickcsv, csv));
-
-            // if(errors.isEmpty()){
-            //     List<Customer> customers2 = customerService.saveCustomerWProfile(csv, conn);
-            //     importService.saveTicketAndLead(leadtickcsv, customers2, conn);
-            // }
-            // else {
-            //     for (Error error : errors) {
-            //         System.out.println(error.getMessage()+" row: "+error.getRowNum()+" file "+error.getFile() );
-            //     }
-            // }
+            List<Error> errors = importService.importData(customers, leadticket, budget, conn);
+            model.addAttribute("importErrors", errors); // Ajoutez cette ligne
         } catch (Exception e) {
             e.printStackTrace();
-        } 
+            model.addAttribute("globalError", "Une erreur inattendue s'est produite lors de l'importation.");
+        }
         return "import-page";
     }
 
