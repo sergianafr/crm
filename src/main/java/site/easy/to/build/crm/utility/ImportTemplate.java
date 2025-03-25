@@ -40,7 +40,6 @@ public class ImportTemplate {
         return records;
     }
 
-    // Lecture d'un fichier CSV depuis les ressources du classpath
     public List<String[]> readCsvFile(String fileName) throws Exception {
         List<String[]> records = new ArrayList<>();
         try (InputStream inputStream = new ClassPathResource(fileName).getInputStream();
@@ -75,7 +74,7 @@ public class ImportTemplate {
 
     // Appel d'une fonction stockée
     public void callFunction(String funcName) {
-        String query = "SELECT " + funcName + "()"; // Ajout de () pour appeler la fonction
+        String query = "SELECT " + funcName + "()";
         jdbcTemplate.execute(query);
     }
 

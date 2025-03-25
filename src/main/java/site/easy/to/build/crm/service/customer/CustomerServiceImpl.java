@@ -4,26 +4,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.mail.Multipart;
 import site.easy.to.build.crm.repository.BudgetRepository;
 import site.easy.to.build.crm.repository.CustomerRepository;
 import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.repository.LeadRepository;
 import site.easy.to.build.crm.repository.TicketRepository;
+import site.easy.to.build.crm.service.generator.GeneratorService;
 import site.easy.to.build.crm.service.lead.LeadService;
 import site.easy.to.build.crm.service.ticket.TicketService;
+import site.easy.to.build.crm.utility.ImportTemplate;
+import site.easy.to.build.crm.utility.Validate;
 import site.easy.to.build.crm.dto.CustomerDto;
 import site.easy.to.build.crm.dto.CustomerTBDto;
 import site.easy.to.build.crm.dto.CustomerTEDto;
 import site.easy.to.build.crm.entity.Budget;
 import site.easy.to.build.crm.entity.Customer;
+import site.easy.to.build.crm.entity.CustomerLoginInfo;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
+import site.easy.to.build.crm.entity.User;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -36,6 +45,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired private ExpenseRepository expenseRepository;
     @Autowired private LeadService leadService;
     @Autowired private TicketService ticketService;
+    @Autowired private GeneratorService generatorService;
+    @Autowired private CustomerLoginInfoService customerLoginInfoService;
     
     @Autowired private TicketRepository ticketRepository;
     public CustomerServiceImpl(CustomerRepository customerRepository) {
@@ -180,4 +191,91 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return ce;
     }
+    @Override
+    public Customer instanceAndGenerate(String[] csv){
+        Customer customer = new Customer();
+        customer.setName(csv[1]);
+        customer.setEmail(csv[0]);
+        HashMap<String, String> location = generatorService.generateLocation();
+        HashMap<String, String> links = generatorService.generateLink(customer.getEmail());
+        customer.setAddress(location.get("address"));
+        customer.setCity(location.get("city"));
+        customer.setCountry(location.get("country"));
+        customer.setState(location.get("state"));
+        customer.setYoutube(links.get("youtube"));
+        customer.setTwitter(links.get("twitter"));
+        customer.setFacebook(links.get("facebook"));
+        customer.setDescription(generatorService.generateLoremIpsum());
+        return customer;
+    }
+
+    @Override
+    public CustomerLoginInfo findProfile(Customer cu, List<CustomerLoginInfo> list){
+        if (cu == null || list == null || list.isEmpty()) {
+            return null;
+        }
+        
+        return list.stream()
+                .filter(info -> cu.getEmail() != null && cu.getEmail().equals(info.getEmail()))
+                .findFirst()
+                .orElse(null);
+    }
+    @Override
+    public List<Customer> instanceAll(List<String[]> list, List<CustomerLoginInfo> info, User userId){
+        List<Customer> listCu = new ArrayList<>();
+        for (int i = 1; i < list.size(); i++) {
+            Customer c = instanceAndGenerate(list.get(i));
+            c.setCustomerLoginInfo(findProfile(c, info));
+            c.setUser(userId);
+            c.setCreatedAt(generatorService.generateDate(LocalDateTime.of(2024,1,1, 0,0), LocalDateTime.of(2024, 10, 1, 0,0)));
+            listCu.add(c);
+        }
+        return listCu;
+    }
+    @Override public List<Customer> saveAll(List<Customer> list){
+        return customerRepository.saveAll(list);
+    }
+
+    @Transactional
+    @Override
+    public void saveCustomerWProfile(List<String[]> csv, User userId){
+        List<CustomerLoginInfo> profiles = customerLoginInfoService.instanceAll(csv);
+        customerLoginInfoService.saveAll(profiles);
+        List<Customer> customers = instanceAll(csv, profiles, userId);
+        saveAll(customers);
+    }
+
+    // @Transactional
+    // @Override
+    // public void saveCustomerWProfile(Multipart file, User userId){
+    //     List<String[]> csv = new ImportTemplate().readCsvFile(file)
+    //     List<CustomerLoginInfo> profiles = customerLoginInfoService.instanceAll(csv);
+    //     customerLoginInfoService.saveAll(profiles);
+    //     List<Customer> customers = instanceAll(csv, profiles, userId);
+    //     saveAll(customers);
+    // }
+
+    @Override
+    public List<site.easy.to.build.crm.utility.Error> checkCustomerError(List<String[]> csv){
+        List<site.easy.to.build.crm.utility.Error> errors = Validate.getDuplicates(csv, 0, "Customer");
+
+        for (int i = 1; i < csv.size(); i++) {
+            String[] data = csv.get(i);
+            if(!Validate.checkEmail(data[0])){
+                errors.add(new site.easy.to.build.crm.utility.Error("Customer", "The email format is invalid.", i, 0));
+            }
+        }  
+        return errors;
+    }
+
+    // @Override
+    // public List<site.easy.to.build.crm.utility.Error> importCSV(List<String[]> csv, User userId){
+    //     List<site.easy.to.build.crm.utility.Error> errors = checkCustomerError(csv);
+    //     if(errors.isEmpty()){
+    //         saveCustomerWProfile(csv, userId);
+    //         return null;
+    //     }
+    //     return 
+    // } 
+    
 }

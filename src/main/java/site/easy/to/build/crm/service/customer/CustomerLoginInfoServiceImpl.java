@@ -1,5 +1,8 @@
 package site.easy.to.build.crm.service.customer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import site.easy.to.build.crm.repository.CustomerLoginInfoRepository;
 import site.easy.to.build.crm.utility.ImportTemplate;
@@ -41,9 +44,22 @@ public class CustomerLoginInfoServiceImpl implements CustomerLoginInfoService {
 
 
     @Override
-    public CustomerLoginInfo saveFromCsv(String[] csvData){
+    public CustomerLoginInfo instanceFromCsv(String[] csvData){
         CustomerLoginInfo cu = new CustomerLoginInfo();
         cu.setEmail(csvData[0]);
-        return customerLoginInfoRepository.save(cu);
+        return cu;
+    }
+    @Override
+    public List<CustomerLoginInfo> instanceAll(List<String[]> csvFile){
+        List<CustomerLoginInfo> res = new ArrayList<>();
+        for (int i = 1; i < csvFile.size(); i++) {
+            res.add(instanceFromCsv(csvFile.get(i)));
+        }
+        return res;
+    }
+
+    @Override
+    public List<CustomerLoginInfo> saveAll(List<CustomerLoginInfo> list){
+        return customerLoginInfoRepository.saveAll(list);
     }
 }
