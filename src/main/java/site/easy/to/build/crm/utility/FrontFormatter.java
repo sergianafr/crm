@@ -12,10 +12,10 @@ public class FrontFormatter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return date.format(formatter);
     }
-    public static String formatCurrency(BigDecimal currency){
+    public static String formatCurrency(BigDecimal currency) {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
-        symbols.setGroupingSeparator(','); 
-        symbols.setDecimalSeparator('.');
+        symbols.setGroupingSeparator(' ');  // Espace comme séparateur de milliers
+        symbols.setDecimalSeparator('.');   // Point comme séparateur décimal
         DecimalFormat formatter = new DecimalFormat("#,##0.00", symbols);  
         return formatter.format(currency);
     }

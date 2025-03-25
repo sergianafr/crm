@@ -31,8 +31,10 @@ public class RateApi {
     public String saveRate(@RequestBody RateRequest rateRequest) {
         System.out.println(rateRequest.getRate());
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            // User connected = userService.findById(authenticationUtils.getLoggedInUserId(authentication));
+            User connected = userService.findById(rateRequest.getIdUser());
+
             System.out.println(connected.getId());
             Rate rate = new Rate();
             rate.setRate(rateRequest.getRate());

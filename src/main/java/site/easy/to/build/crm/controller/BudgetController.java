@@ -68,8 +68,8 @@ public class BudgetController {
 
         // Traiter l'objet budget (par exemple, le sauvegarder en base de données)
         budgetService.save(budget);
-        model.addAttribute("success", "Budget créé avec succès !");
-        System.out.println("Budget créé avec succès !");
+        model.addAttribute("success", "Budget added successfully!");
+        System.out.println("Budget added successfully!");
         // Rediriger vers une autre page (par exemple, la liste des budgets)
         return "budget/create-budget";
     }

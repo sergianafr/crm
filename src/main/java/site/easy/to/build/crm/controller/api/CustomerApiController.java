@@ -35,12 +35,12 @@ public class CustomerApiController {
             BigDecimal rateValue = totalBudget.multiply(BigDecimal.valueOf(maxRate.getRate()).divide(BigDecimal.valueOf(100)));
 
             BigDecimal totalExpenseWithAmount = actualExpense.add(amount);
-
+            // System.out.println();
             Map<String, Object> response = new HashMap<>();
             response.put("maxRate", maxRate.getRate());
             response.put("maxValueRate", rateValue);
             response.put("totalBudget", totalBudget);
-
+            response.put("actualExpense", actualExpense);
             if (totalExpenseWithAmount.compareTo(rateValue) <= 0) {
                 response.put("status", "valid");
             } else if (totalExpenseWithAmount.compareTo(rateValue) >= 0 && totalExpenseWithAmount.compareTo(totalBudget) <= 0) {
