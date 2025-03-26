@@ -215,10 +215,10 @@
                                     if (response.status === 'valid') {
                                         $('#validMessage').show(); 
                                     } else if (response.status === 'superior') {
-                                        $('#warningMessage').text(`The total expense for this client has exceeded the max rate (${response.maxRate}%-${response.maxValueRate}).`);
+                                        $('#warningMessage').text(`The total expense for this client has exceeded the max rate (${response.maxRate}%-${response.maxValueRate.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}).<br>Actual expense:${response.actualExpense.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}`);
                                         $('#warningMessage').show(); // Afficher la carte jaune
                                     } else if (response.status === 'exceed') {
-                                        $('#exceedModal .modal-body').html(`<p>The total expense for this customer has exceeded the budget rate (${response.maxRate}%-${response.maxValueRate})<br> Customer Budget:${response.totalBudget}<br> Still want to proceed?</p>`);
+                                        $('#exceedModal .modal-body').html(`<p>The total expense for this customer has exceeded the budget (${response.maxRate}%-${response.maxValueRate.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")})<br> Actual expense:${response.actualExpense.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} <br> Customer Budget:${response.totalBudget.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")}<br> Still want to proceed?</p>`);
                                         $('#exceedModal').modal('show'); // Afficher le modal
                                     }
                                 },
