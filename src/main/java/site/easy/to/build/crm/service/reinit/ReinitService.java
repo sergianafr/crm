@@ -23,7 +23,12 @@ public class ReinitService {
         for (String table : tables) {
             String tabString = table.toLowerCase();
             if(!tabString.equals("oauth_users") && !tabString.equals("user_profile") && !tabString.equals("users") && !tabString.equals("roles") && !tabString.equals("user_roles")){
-                jdbcTemplate.execute("DELETE FROM " + table);
+                if(tabString.equals("rate")){
+                    System.out.print("rateeeee");
+                    System.out.print("DELETE FROM " + table+" WHERE id>1");
+                    jdbcTemplate.execute("DELETE FROM " + table+" WHERE id>1");
+                }
+                else {jdbcTemplate.execute("DELETE FROM " + table);}
                 
                 System.out.println(table+" tab "+i++);
             }

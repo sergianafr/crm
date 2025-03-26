@@ -25,19 +25,14 @@ public class Validate {
         return email.contains("@") && email.contains(".");
     }
     public static boolean checkAmount(String amount){
-        try{
-            double d = Double.valueOf(amount);
-            if(Double.valueOf(amount)<0){
-                return false;
-            } 
-        } catch(Exception e){
+        if(Double.valueOf(amount)<0){
             return false;
         }
         return true;
     }
     public static boolean checkType(String type){
-        // type.toLowerCase();
-        if(type.toLowerCase().equals("ticket") || type.toLowerCase().equals("lead")){
+        type.toLowerCase();
+        if(type.equals("ticket") || type.equals("lead")){
             return true;
         } return false;
     }
@@ -110,27 +105,35 @@ public class Validate {
             return errors;
         }
 
-        // Map pour stocker les lignes et leurs numéros de ligne
-        // La clé est une représentation textuelle de la ligne pour le comparaison
-        Map<String, List<Integer>> rowOccurrences = new HashMap<>();
+        // Map pour stocker les valeurs et leurs positions (ligne, colonne)
+        Map<String, List<int[]>> valuePositions = new HashMap<>();
 
-        for (int i = 0; i < csvData.size(); i++) {
-            String[] row = csvData.get(i);
-            String rowKey = String.join("|", row); // Crée une clé unique pour la ligne
-            
-            rowOccurrences.computeIfAbsent(rowKey, k -> new ArrayList<>()).add(i + 1); // +1 pour numéroter à partir de 1
+        // Parcourir toutes les lignes (en ignorant éventuellement l'en-tête si nécessaire)
+        for (int row = 0; row < csvData.size(); row++) {
+            String[] rowData = csvData.get(row);
+            if (rowData == null) continue;
+
+            // Parcourir toutes les colonnes de la ligne
+            for (int col = 0; col < rowData.length; col++) {
+                String value = rowData[col];
+                if (value == null || value.trim().isEmpty()) continue;
+
+                // Enregistrer la position de cette valeur
+                valuePositions.computeIfAbsent(value, k -> new ArrayList<>())
+                             .add(new int[]{row + 1, col + 1}); // +1 pour compter à partir de 1
+            }
         }
 
         // Vérifier les doublons
-        for (Map.Entry<String, List<Integer>> entry : rowOccurrences.entrySet()) {
-            List<Integer> occurrences = entry.getValue();
-            if (occurrences.size() > 1) {
-                for (int i = 1; i < occurrences.size(); i++) {
+        for (Map.Entry<String, List<int[]>> entry : valuePositions.entrySet()) {
+            List<int[]> positions = entry.getValue();
+            if (positions.size() > 1) { // Si la valeur apparaît plus d'une fois
+                for (int[] pos : positions) {
                     errors.add(new Error(
                             fileName,
-                            "Duplicated row: " + entry.getKey(),
-                            occurrences.get(i), // Numéro de ligne du doublon
-                            occurrences.get(0)  // Numéro de la première occurrence
+                            "Valeur en double: '" + entry.getKey() + "'",
+                            pos[0], // rowNum
+                            pos[1]  // colNum
                     ));
                 }
             }

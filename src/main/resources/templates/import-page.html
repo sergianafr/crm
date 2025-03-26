@@ -93,8 +93,8 @@
                                                 <span class="badge file-badge rounded-pill" 
                                                       th:text="${error.file}">File</span>
                                             </td>
-                                            <td th:text="${error.rowNum != 0} ? ${error.rowNum} : 'N/A'">Ligne</td>
-                                            <td th:text="${error.colNum != 0} ? ${error.colNum} : 'N/A'">Colonne</td>
+                                            <td th:text="${error.rowNum != 0} ? ${error.rowNum} : 'N/A'">Row</td>
+                                            <td th:text="${error.colNum != 0} ? ${error.colNum} : '1'">Col</td>
                                             <td class="error-message" th:text="${error.message}">Message</td>
                                         </tr>
                                     </tbody>

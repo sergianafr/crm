@@ -74,8 +74,8 @@ public class ImportService {
             // List<Error> err = 
             List<Error> errors = customerService.checkCustomerError(csv);
             errors.addAll(Validate.checkForDuplicates(csv, "customer"));
-            // errors.addAll(Validate.checkForDuplicates(leadtickcsv, "ticket-and-lead"));
-            // errors.addAll(Validate.checkForDuplicates(budgetcsv, "budget"));
+            errors.addAll(Validate.checkForDuplicates(leadtickcsv, "ticket-and-lead"));
+            errors.addAll(Validate.checkForDuplicates(budgetcsv, "budget"));
 
             errors.addAll(checkErrorTicketLead(leadtickcsv, csv));
             errors.addAll(budgetService.checkBudgetError(budgetcsv, csv));
