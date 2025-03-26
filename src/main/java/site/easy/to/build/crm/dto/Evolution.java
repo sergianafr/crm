@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Evolution {
     private BigDecimal amountExpense;
-    private BigDecimal amountBudget;
+    private Long amountBudget;
     private String date;
 }
