@@ -11,6 +11,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import site.easy.to.build.crm.dto.export.CustomerExportDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.CustomerLoginInfo;
 import site.easy.to.build.crm.entity.OAuthUser;
@@ -27,8 +31,11 @@ import site.easy.to.build.crm.util.AuthenticationUtils;
 import site.easy.to.build.crm.util.AuthorizationUtil;
 import site.easy.to.build.crm.util.EmailTokenUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Controller
 @RequestMapping("/employee/customer")
@@ -208,6 +215,25 @@ public class CustomerController {
         }
         return "redirect:/employee/customer/my-customers";
     }
+    @PostMapping("/copy/{id}")
+    public String copy(@PathVariable("id") int id) {
+        Customer cu = customerService.findByCustomerId(id);
+        CustomerExportDto export = customerService.createCopy(cu);
+        ObjectMapper om = new ObjectMapper();
 
+        try {
+
+            // create a file object
+            File file = new File("customer-"+id+".json");
+            om.writeValue(file, export);
+
+            System.out.println("Filed saved to: " + file.getAbsolutePath());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "redirect:/employee/customer/my-customers";
+    }
+    
 
 }

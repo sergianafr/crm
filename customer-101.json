@@ -1,0 +1,90 @@
+{
+  "email": "copy_courtneybennett@miller.com",
+  "name": "copy_Adam Long",
+  "budgets": [
+    { "amount": 65301.82, "createdAt": "2024-09-08 06:49:57" },
+    { "amount": 57013.35, "createdAt": "2024-09-08 06:49:57" }
+  ],
+  "tickets": [
+    {
+      "subject": "Revolutionize b2c web-readiness",
+      "description": "Velit voluptatibus distinctio inventore maiores consequatur aspernatur. Odit et nisi reiciendis recusandae.",
+      "status": "open",
+      "priority": "urgent",
+      "expense": 1768.91,
+      "employeeId": 52,
+      "createdAt": "2025-02-08 03:45:02"
+    },
+    {
+      "subject": "Synthesize world-class portals",
+      "description": "Blanditiis minima adipisci dicta consequuntur sed.",
+      "status": "open",
+      "priority": "medium",
+      "expense": 4519.3,
+      "employeeId": 52,
+      "createdAt": "2025-02-18 02:05:46"
+    },
+    {
+      "subject": "Utilize impactful partnerships",
+      "description": "Qui similique quaerat. Autem quo cupiditate doloribus ipsum nesciunt. Non ut id sint saepe laboriosam.",
+      "status": "open",
+      "priority": "critical",
+      "expense": 4058.04,
+      "employeeId": 52,
+      "createdAt": "2025-02-12 05:30:18"
+    },
+    {
+      "subject": "Incubate wireless niches",
+      "description": "Minima reiciendis sapiente doloremque et aut unde. Omnis quidem cumque dolorum adipisci autem itaque.",
+      "status": "archived",
+      "priority": "medium",
+      "expense": 7249.62,
+      "employeeId": 52,
+      "createdAt": "2025-02-16 21:22:36"
+    },
+    {
+      "subject": "Monetize b2b models",
+      "description": "Et enim in perspiciatis. Esse illum accusamus praesentium et. Fugit dolorem beatae maxime consequatur doloribus doloremque.",
+      "status": "open",
+      "priority": "urgent",
+      "expense": 1476.82,
+      "employeeId": 52,
+      "createdAt": "2025-03-02 11:55:52"
+    },
+    {
+      "subject": "Streamline killer web-readiness",
+      "description": "Dolores expedita ut voluptas sed vel laborum consequatur. Aut optio et totam fuga sunt temporibus quo. Sed velit debitis vero et.",
+      "status": "open",
+      "priority": "low",
+      "expense": 881.8,
+      "employeeId": 52,
+      "createdAt": "2025-03-09 19:41:50"
+    }
+  ],
+  "leads": [
+    {
+      "name": "Matrix leading-edge e-business",
+      "phone": "0592446586",
+      "employeeId": 52,
+      "status": "meeting-to-schedule",
+      "expense": 2799.56,
+      "createdAt": "2025-03-19 05:56:11"
+    },
+    {
+      "name": "Whiteboard cross-platform experiences",
+      "phone": "0557120226",
+      "employeeId": 52,
+      "status": "meeting-to-schedule",
+      "expense": 3789.52,
+      "createdAt": "2025-02-06 23:34:00"
+    },
+    {
+      "name": "Brand seamless functionalities",
+      "phone": "01 09 39 66 69",
+      "employeeId": 52,
+      "status": "archived",
+      "expense": 1773.35,
+      "createdAt": "2025-03-15 22:08:24"
+    }
+  ]
+}

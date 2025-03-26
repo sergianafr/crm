@@ -39,7 +39,12 @@ public class ImportService {
                 errors.add(new Error("Lead-and-ticket", "The type is not valid.", i, 2));
             }
             if( Validate.checkType(csv.get(i)[2]) && !Validate.isValidStatus(csv.get(i)[2], csv.get(i)[3])){
-                errors.add(new Error("Lead-and-ticket", "The status is not valid for this type.", i, 3));
+                if(csv.get(i)[2].toLowerCase().equals("ticket")){
+                    csv.get(i)[3] = "open";
+                }else if(csv.get(i)[2].toLowerCase().equals("lead")){
+                    csv.get(i)[3] = "scheduled";
+                }
+                // errors.add(new Error("Lead-and-ticket", "The status is not valid for this type.", i, 3));
             }
             System.out.print(Formatter.formatToDouble(csv.get(i)[4])+"\n");
             if(!Validate.checkAmount(Formatter.formatToDouble(csv.get(i)[4]))){

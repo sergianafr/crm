@@ -1,6 +1,9 @@
 package site.easy.to.build.crm.entity;
 
 import jakarta.persistence.*;
+import site.easy.to.build.crm.dto.export.BudgetExportDto;
+import site.easy.to.build.crm.utility.Formatter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -41,6 +44,12 @@ public class Budget {
         this.customer = customer;
         this.user = user;
         this.createdAt = LocalDateTime.now(); // Définit la date de création automatiquement
+    }
+    public Budget(BudgetExportDto b, Customer customer, User user){
+        this.setCreatedAt(Formatter.getLocalDateTime(b.getCreatedAt()));
+        this.setAmount(b.getAmount());
+        this.setCustomer(customer);
+        this.setUser(user);
     }
 
     // Getters et Setters

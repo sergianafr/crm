@@ -12,17 +12,25 @@ import site.easy.to.build.crm.repository.CustomerRepository;
 import site.easy.to.build.crm.repository.ExpenseRepository;
 import site.easy.to.build.crm.repository.LeadRepository;
 import site.easy.to.build.crm.repository.TicketRepository;
+import site.easy.to.build.crm.repository.UserRepository;
 import site.easy.to.build.crm.service.generator.GeneratorService;
 import site.easy.to.build.crm.service.lead.LeadService;
 import site.easy.to.build.crm.service.ticket.TicketService;
+import site.easy.to.build.crm.utility.FrontFormatter;
 import site.easy.to.build.crm.utility.ImportTemplate;
 import site.easy.to.build.crm.utility.Validate;
 import site.easy.to.build.crm.dto.CustomerDto;
 import site.easy.to.build.crm.dto.CustomerTBDto;
 import site.easy.to.build.crm.dto.CustomerTEDto;
+import site.easy.to.build.crm.dto.export.BudgetExportDto;
+import site.easy.to.build.crm.dto.export.CustomerExportDto;
+import site.easy.to.build.crm.dto.export.CustomerLoginInfoDto;
+import site.easy.to.build.crm.dto.export.LeadExportDto;
+import site.easy.to.build.crm.dto.export.TicketExportDto;
 import site.easy.to.build.crm.entity.Budget;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.CustomerLoginInfo;
+import site.easy.to.build.crm.entity.Expense;
 import site.easy.to.build.crm.entity.Lead;
 import site.easy.to.build.crm.entity.Ticket;
 import site.easy.to.build.crm.entity.User;
@@ -47,7 +55,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired private TicketService ticketService;
     @Autowired private GeneratorService generatorService;
     @Autowired private CustomerLoginInfoService customerLoginInfoService;
-    
+    @Autowired private UserRepository userRepository;
     @Autowired private TicketRepository ticketRepository;
     public CustomerServiceImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
@@ -279,14 +287,108 @@ public class CustomerServiceImpl implements CustomerService {
         return errors;
     }
 
-    // @Override
-    // public List<site.easy.to.build.crm.utility.Error> importCSV(List<String[]> csv, User userId){
-    //     List<site.easy.to.build.crm.utility.Error> errors = checkCustomerError(csv);
-    //     if(errors.isEmpty()){
-    //         saveCustomerWProfile(csv, userId);
-    //         return null;
-    //     }
-    //     return 
-    // } 
+    @Override
+    public CustomerExportDto createCopy(Customer cu){
+        List<Lead> leads = leadRepository.findByCustomerCustomerId(cu.getCustomerId());
+        List<Ticket> tickets = ticketRepository.findByCustomerCustomerId(cu.getCustomerId());
+        List<Budget> budgets = budgetRepository.findByCustomer(cu);
+        CustomerExportDto copy = new CustomerExportDto();
+        copy.setPhone(cu.getPhone());
+        copy.setAddress(cu.getAddress());
+        copy.setCity(cu.getCity());
+        copy.setState(cu.getState());
+        copy.setCountry(cu.getCountry());
+        copy.setIdUser(cu.getUser().getId());
+        List<LeadExportDto> copyLeads = new ArrayList<>();
+        List<TicketExportDto> copyTickets = new ArrayList<>();
+        List<BudgetExportDto> copyBudget = new ArrayList<>();
+        for (Budget b : budgets) {
+            copyBudget.add(new BudgetExportDto(b.getAmount(), b.getUser().getId(), FrontFormatter.formatLocalDateTime(b.getCreatedAt())));
+        }for (Lead l : leads) {
+            copyLeads.add(new LeadExportDto(l.getName(), l.getPhone(), l.getEmployee().getId(),l.getStatus() ,expenseRepository.findByLead(l).get(0).getAmount(), FrontFormatter.formatLocalDateTime(l.getCreatedAt())));
+        }for (Ticket ticket : tickets) {
+            copyTickets.add(new TicketExportDto(ticket.getSubject(), ticket.getDescription(), ticket.getStatus(), ticket.getPriority(), expenseRepository.findByTicket(ticket).get(0).getAmount(), ticket.getEmployee().getId(),FrontFormatter.formatLocalDateTime(ticket.getCreatedAt())));
+        }
+        copy.setBudgets(copyBudget);
+        copy.setEmail("copy_"+cu.getEmail());
+        copy.setLeads(copyLeads);
+        copy.setName("copy_"+cu.getName());
+        copy.setTickets(copyTickets);
+        // copy.setProfile(copyprofile);
+        
+        return copy;
+    }
+    @Override
+    @Transactional
+    public Customer createFromCopy(CustomerExportDto dto)throws Exception {
+        Customer customer = new Customer();
+        try {
+            customer.setEmail(dto.getEmail());
+            customer.setName(dto.getName());
+            customer.setPhone(dto.getPhone());
+            customer.setAddress(dto.getAddress());
+            customer.setCity(dto.getCity());
+            customer.setState(dto.getState());
+            customer.setCountry(dto.getCountry());
+            customer.setUser(userRepository.findById(dto.getIdUser()));
+            
+            CustomerLoginInfo profile = new CustomerLoginInfo();
+            profile.setEmail(dto.getEmail());
+            customerLoginInfoService.save(profile);
     
+            // Création des budgets
+            List<Budget> budgets = new ArrayList<>();
+            for (BudgetExportDto bDto : dto.getBudgets()) {
+                budgets.add(new Budget(bDto, customer, userRepository.findById(bDto.getIdUser())));
+
+            }
+            
+            // Création des leads
+            List<Lead> leads = new ArrayList<>();
+            for (LeadExportDto lDto : dto.getLeads()) {
+                User employee = userRepository.findById(lDto.getEmployeeId());
+                leads.add(new Lead(lDto, customer, employee));
+            }
+            
+            // Création des tickets
+            List<Ticket> tickets = new ArrayList<>();
+            for (TicketExportDto tDto : dto.getTickets()) {
+                User employee = userRepository.findById(tDto.getEmployeeId());
+                tickets.add(new Ticket(tDto, customer, employee));
+            }
+            
+            customer.setBudgets(budgets);
+            customer.setLeads(leads);
+            customer.setTickets(tickets);
+            customer = customerRepository.save(customer);
+            
+        } catch (Exception e) {
+           throw e;
+        }
+        
+        // Sauvegarde des dépenses associées aux leads et tickets
+        // List<Expense> expenses = new ArrayList<>();
+        // for (Lead lead : leads) {
+        //     for (LeadExportDto lDto : dto.getLeads()) {
+        //         if (lDto.getName().equals(lead.getName())) {
+        //             expenses.add(new Expense(lDto.getExpenseAmount(), lead));
+        //             break;
+        //         }
+        //     }
+        // }
+        
+        // for (Ticket ticket : tickets) {
+        //     for (TicketExportDto tDto : dto.getTickets()) {
+        //         if (tDto.getSubject().equals(ticket.getSubject())) {
+        //             expenses.add(new Expense(tDto.getExpenseAmount(), ticket));
+        //             break;
+        //         }
+        //     }
+        // }
+        
+        // expenseRepository.saveAll(expenses);
+        
+        return customer;
+    }
+
 }

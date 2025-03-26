@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import site.easy.to.build.crm.dto.export.TicketExportDto;
+import site.easy.to.build.crm.utility.Formatter;
 
 import org.hibernate.mapping.ToOne;
 
@@ -11,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 @AllArgsConstructor
 @Entity
@@ -74,6 +77,18 @@ public class Ticket {
         this.employee = employee;
         this.customer = customer;
         this.createdAt = createdAt;
+    }
+    public Ticket(TicketExportDto ticketDto, Customer customer, User user){
+        this.setSubject(ticketDto.getSubject());
+        this.setDescription(ticketDto.getDescription());
+        this.setStatus(ticketDto.getStatus());
+        this.setPriority(ticketDto.getPriority());
+        List<Expense> expenses = new ArrayList<>();
+        expenses.add(new Expense(description, ticketDto.getExpense(), null, this, null));
+        this.setExpenses(expenses);
+        this.setCreatedAt(Formatter.getLocalDateTime(ticketDto.getCreatedAt()));
+        this.setCustomer(customer);
+        this.setEmployee(user);
     }
 
     public int getTicketId() {

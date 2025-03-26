@@ -202,6 +202,7 @@ public class TicketServiceImpl implements TicketService{
         expense.setDescriptions(t.getSubject());
         expense.setUser(connected);
         h.setExpense(expense);
+        h.setAmount(expense.getAmount());
         expense.setHistoryExpenses(historyExpenses);
 
         List<Expense> exps = new ArrayList<>();

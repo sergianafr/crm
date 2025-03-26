@@ -5,6 +5,7 @@ import org.checkerframework.checker.units.qual.C;
 import site.easy.to.build.crm.dto.CustomerDto;
 import site.easy.to.build.crm.dto.CustomerTBDto;
 import site.easy.to.build.crm.dto.CustomerTEDto;
+import site.easy.to.build.crm.dto.export.CustomerExportDto;
 import site.easy.to.build.crm.entity.Customer;
 import site.easy.to.build.crm.entity.CustomerLoginInfo;
 import site.easy.to.build.crm.entity.User;
@@ -43,4 +44,6 @@ public interface CustomerService {
      public List<Customer> saveCustomerWProfile(List<String[]> csv, User userId);
      public List<site.easy.to.build.crm.utility.Error> checkCustomerError(List<String[]> csv);
      public Customer findInListByMail(String email, List<Customer> customers);
+    public CustomerExportDto createCopy(Customer customer);
+    public Customer createFromCopy(CustomerExportDto dto)throws Exception;
 }

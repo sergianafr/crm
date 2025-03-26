@@ -200,7 +200,9 @@ public class LeadServiceImpl implements LeadService {
         expense.setDescriptions(l.getName());
         expense.setUser(connected);
         h.setExpense(expense);
+        h.setAmount(expense.getAmount());
         expense.setHistoryExpenses(historyExpenses);
+
         
         exps.add(expense);
         l.setExpenses(exps);

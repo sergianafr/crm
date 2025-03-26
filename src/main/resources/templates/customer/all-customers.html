@@ -109,6 +109,13 @@
                                                     </button>
                                                 </form>
                                             </td>
+                                            <td>
+                                                <form th:action="${home + 'employee/customer/copy/' + customer.customerId}" method="post">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        Copy
+                                                    </button>
+                                                </form>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>

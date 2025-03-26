@@ -2,6 +2,7 @@ package site.easy.to.build.crm.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import site.easy.to.build.crm.dto.export.CustomerLoginInfoDto;
 
 @Entity
 @Table(name = "customer_login_info")
@@ -87,5 +88,9 @@ public class CustomerLoginInfo {
 
     public void setEmail(String email) {
         this.username = email;
+    }
+
+    public CustomerLoginInfo(CustomerLoginInfoDto cu){
+        this.setEmail(cu.getUsername());
     }
 }

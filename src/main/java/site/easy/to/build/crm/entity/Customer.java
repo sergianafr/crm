@@ -10,6 +10,7 @@ import jakarta.validation.groups.Default;
 import site.easy.to.build.crm.customValidations.customer.UniqueEmail;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,7 @@ public class Customer {
     @NotBlank(message = "Name is required", groups = {Default.class, CustomerUpdateValidationGroupInclusion.class})
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     @NotBlank(message = "Email is required")
     @Email(message = "Please enter a valid email format")
     @UniqueEmail
@@ -64,13 +65,19 @@ public class Customer {
     private String youtube;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable=false)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnoreProperties("customer")
     private User user;
 
-    @OneToMany(mappedBy = "customer")
-    private List<Budget> budgets;
-    
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Budget> budgets = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Lead> leads = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ticket> tickets = new ArrayList<>();
+
     @OneToOne
     @JoinColumn(name = "profile_id")
     @JsonIgnore
@@ -78,8 +85,9 @@ public class Customer {
 
     @Column(name = "created_at")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now(); 
 
+    
     public Customer() {
     }
 
@@ -109,6 +117,22 @@ public class Customer {
 
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
+    }
+
+    public List<Lead> getLeads() {
+        return leads;
+    }
+
+    public void setLeads(List<Lead> leads) {
+        this.leads = leads;
+    }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
     }
 
     public String getName() {
@@ -194,7 +218,7 @@ public class Customer {
     public String getFacebook() {
         return facebook;
     }
-
+    
     public void setFacebook(String facebook) {
         this.facebook = facebook;
     }

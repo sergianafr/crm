@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import site.easy.to.build.crm.dto.export.LeadExportDto;
+import site.easy.to.build.crm.utility.Formatter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -230,6 +233,19 @@ public class Lead {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Lead(LeadExportDto l, Customer customer, User employee){
+        this.setName(l.getName());
+        this.setPhone(l.getPhone());
+        this.setStatus(l.getStatus());
+        List<Expense> expenses = new ArrayList<>();
+        expenses.add(new Expense(name, l.getExpense(), null, null, this));
+        this.setExpenses(expenses);
+        this.setCreatedAt(Formatter.getLocalDateTime(l.getCreatedAt()));
+        this.setCustomer(customer);
+        this.setEmployee(employee);
+        // this.setEmployee(l.getEmployeeId())
     }
 }
 

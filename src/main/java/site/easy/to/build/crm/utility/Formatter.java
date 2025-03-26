@@ -170,23 +170,26 @@ public class Formatter {
         // Définir le format de sortie (celui de MySQL)
         DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-        // Essayer chaque format d'heure jusqu'à ce qu'une correspondance soit trouvée
         for (String format : TIME_FORMATS) {
             DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern(format);
 
             try {
-                // Parser l'heure d'entrée
                 LocalTime parsedTime = LocalTime.parse(time, inputFormat);
-                // Formater l'heure en sortie
                 return parsedTime.format(outputFormat);
             } catch (DateTimeParseException e) {
-                // Ignorer et essayer le prochain format
             }
         }
 
         // Si aucun format ne correspond
         errors.add("Aucun format d'heure ne correspond : " + time+ " ligne : "+row+" colonne : "+col);
         return null;
+    }
+
+    public static LocalDateTime getLocalDateTime(String string){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        
+        LocalDateTime localDateTime = LocalDateTime.parse(string, formatter);
+        return localDateTime;
     }
 
     
